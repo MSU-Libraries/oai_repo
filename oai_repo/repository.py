@@ -1,8 +1,9 @@
 """
 OAIRepository functionality
 """
-from .request import OAIRequest
-from .response import OAIResponse
+from .identify import IdentifyRequest, IdentifyResponse
+from .listmetadataformats import ListMetadataFormatsRequest, ListMetadataFormatsResponse
+
 
 class OAIRepository:
     """
@@ -20,4 +21,7 @@ class OAIRepository:
         pass
 
     def process(self, request: OAIRequest) -> OAIResponse:
+        """
+        Given a request, route to appropriate action and return a response
+        """
         pass

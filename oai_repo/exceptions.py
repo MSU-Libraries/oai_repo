@@ -2,29 +2,38 @@
 OAI Exceptions and Errors
 """
 
+
 class OAIException(Exception):
-    pass
+    """Shared base class for OAI errors."""
+    @classmethod
+    def code(cls):
+        """
+        Return the OAI error code for the current exception.
+        E.g. "OAIErrorBadArgument" => "badArgument"
+        """
+        name = cls.__name__.removeprefix("OAIError")
+        return name[:1].lower() + name[1:]
 
 class OAIErrorBadArgument(OAIException):
-    pass
+    """Class for OAI badArgument"""
 
-class OAIErrorBadResuptionToken(OAIException):
-    pass
+class OAIErrorBadResumptionToken(OAIException):
+    """Class for OAI badResumptionToken"""
 
 class OAIErrorBadVerb(OAIException):
-    pass
+    """Class for OAI badVerb"""
 
 class OAIErrorCannotDisseminateFormat(OAIException):
-    pass
+    """Class for OAI cannotDisseminateFormat"""
 
 class OAIErrorIdDoesNotExist(OAIException):
-    pass
+    """Class for OAI idDoesNotExist"""
 
 class OAIErrorNoRecordsMatch(OAIException):
-    pass
+    """Class for OAI noRecordsMatch"""
 
 class OAIErrorNoMetadataFormats(OAIException):
-    pass
+    """Class for OAI noMetadataFormats"""
 
 class OAIErrorNoSetHierarchy(OAIException):
-    pass
+    """Class for OAI noSetHierarchy"""
