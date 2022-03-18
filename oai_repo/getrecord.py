@@ -1,20 +1,23 @@
 """
-Implementation of Identify verb
+Implementation of GetRecord verb
 """
 from .exceptions import OAIErrorBadArgument
 from .request import OAIRequest
 from .response import OAIResponse
 
 
-class IdentifyRequest(OAIRequest):
+class GetRecordRequest(OAIRequest):
     """
     raises:
         OAIErrorBadArgument
+        OAIErrorIdDoesNotExist
+        OAIErrorCannotDisseminateFormat
     """
     def __init__(self):
         super().__init__()
+        self.required_args = ["identifier", "metadataPrefix"]
 
 
-class IdentifyResponse(OAIResponse):
+class GetRecordResponse(OAIResponse):
     """
     """
