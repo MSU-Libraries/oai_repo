@@ -14,3 +14,7 @@ class OAIErrorResponse(OAIResponse):
 
     def __repr__(self):
         return f"OAIErrorResponse(code={self.code})"
+
+    def success():
+        """Indicates this response is for a failed request"""
+        return False

@@ -1,6 +1,8 @@
 """
 OAIRepository functionality
 """
+import json
+from typing import NamedTuple
 from .getrecord import GetRecordRequest, GetRecordResponse
 from .identify import IdentifyRequest, IdentifyResponse
 from .listidentifiers import ListIdentifiersRequest, ListIdentifiersResponse
@@ -12,31 +14,37 @@ from .error import OAIErrorResponse
 from .request import OAIRequest
 from .response import OAIResponse
 
-# TODO NamedTuple for Req/Resp pair?
+class VerbClasses(NamedTuple):
+    request: OAIRequest
+    response: OAIResponse
+
 VERBS = {
-    'GetRecord': (GetRecordRequest, GetRecordResponse),
-    'Identify': (IdentifyRequest, IdentifyResponse),
-    'ListIdentifiers': (ListIdentifiersRequest, ListIdentifiersResponse),
-    'ListMetadataFormats': (ListMetadataFormatsRequest, ListMetadataFormatsResponse),
-    'ListRecords': (ListRecordsRequest, ListRecordsResponse),
-    'ListSets': (ListSetsRequest, ListSetsResponse)
+    'GetRecord': VerbClasses(GetRecordRequest, GetRecordResponse),
+    'Identify': VerbClasses(IdentifyRequest, IdentifyResponse),
+    'ListIdentifiers': VerbClasses(ListIdentifiersRequest, ListIdentifiersResponse),
+    'ListMetadataFormats': VerbClasses(ListMetadataFormatsRequest, ListMetadataFormatsResponse),
+    'ListRecords': VerbClasses(ListRecordsRequest, ListRecordsResponse),
+    'ListSets': VerbClasses(ListSetsRequest, ListSetsResponse)
 }
 
 class OAIRepository:
     """
     """
     def __init__(self, filepath: str = None):
+        self.config = {}
         if filepath:
             self.config_from_file(filepath)
 
     def config_from_file(self, filepath):
-        pass
-
-    def config(self, key: str, val):
-        """
-        Set or change a repository configuration setting
-        """
-        pass
+        try:
+            with open(filepath, 'r', encoding='utf8') as fileh:
+                self.config = json.load(fileh)
+        except FileNotFoundError as exc:
+            #TODO
+            raise exc
+        except json.JSONDecodeError as exc:
+            #TODO
+            raise exc
 
     def process(self, request: dict|OAIRequest) -> OAIResponse:
         """
@@ -45,25 +53,19 @@ class OAIRepository:
         try:
             if isinstance(request, dict):
                 request = _create_request(request)
-            response = _create_response(request)
+            response = _create_response(self, request)
         except OAIException as exc:
             response = OAIErrorResponse(exc)
         return response
 
 def _create_request(args: dict) -> OAIRequest:
-    """
-    TODO
-    """
     try:
         verb = args.pop('verb')
-        request = VERBS[verb][0]()
+        request = VERBS[verb].request()
         request.parse(args)
         return request
     except KeyError:
         raise OAIErrorBadVerb("The value of the 'verb' argument in the request is not legal.")
 
-def _create_response(request: OAIRequest) -> OAIResponse:
-    """
-    TODO
-    """
-    return VERBS[request.verb][1]()
+def _create_response(repository: OAIRepository, request: OAIRequest) -> OAIResponse:
+    return VERBS[request.verb].response(repository, request)
