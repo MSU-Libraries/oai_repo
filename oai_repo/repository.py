@@ -1,7 +1,6 @@
 """
 OAIRepository functionality
 """
-import json
 from typing import NamedTuple
 from .getrecord import GetRecordRequest, GetRecordResponse
 from .identify import IdentifyRequest, IdentifyResponse
@@ -13,6 +12,7 @@ from .exceptions import OAIException, OAIErrorBadVerb
 from .error import OAIErrorResponse
 from .request import OAIRequest
 from .response import OAIResponse
+from .config import OAIConfig
 
 class VerbClasses(NamedTuple):
     request: OAIRequest
@@ -31,20 +31,7 @@ class OAIRepository:
     """
     """
     def __init__(self, filepath: str = None):
-        self.config = {}
-        if filepath:
-            self.config_from_file(filepath)
-
-    def config_from_file(self, filepath):
-        try:
-            with open(filepath, 'r', encoding='utf8') as fileh:
-                self.config = json.load(fileh)
-        except FileNotFoundError as exc:
-            #TODO
-            raise exc
-        except json.JSONDecodeError as exc:
-            #TODO
-            raise exc
+        self.config = OAIConfig(filepath)
 
     def process(self, request: dict|OAIRequest) -> OAIResponse:
         """

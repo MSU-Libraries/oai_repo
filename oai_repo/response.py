@@ -54,7 +54,7 @@ class OAIResponse:
         response_date_elem.text = response_date.replace(microsecond=0).isoformat() + "Z"
         # request element
         request_elem = etree.SubElement(self.xmlr, "request")
-        request_elem.text = self.repository.config['baseurl']
+        request_elem.text = self.repository.config.baseurl
         if self.success():
             for argk, argv in self.request.args.items():
                 request_elem.set(argk, argv)
