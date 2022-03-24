@@ -39,13 +39,14 @@ class OAIRepository:
         """
         try:
             if isinstance(request, dict):
-                request = self._create_request(request)
-            response = self._create_response(request)
+                request = self.create_request(request)
+            response = self.create_response(request)
         except OAIException as exc:
             response = OAIErrorResponse(self, exc)
         return response
 
-    def _create_request(self, args: dict) -> OAIRequest:
+    @staticmethod
+    def create_request(args: dict) -> OAIRequest:
         try:
             verb = args.pop('verb')
             request = VERBS[verb].request()
@@ -54,5 +55,5 @@ class OAIRepository:
         except KeyError:
             raise OAIErrorBadVerb("The value of the 'verb' argument in the request is not legal.")
 
-    def _create_response(self, request: OAIRequest) -> OAIResponse:
+    def create_response(self, request: OAIRequest) -> OAIResponse:
         return VERBS[request.verb].response(self, request)

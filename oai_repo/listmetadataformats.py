@@ -28,5 +28,13 @@ class ListMetadataFormatsResponse(OAIResponse):
     def body(self):
         """Response body"""
         xmlb = etree.Element("ListMetadataFormats")
-        # TODO
+        # With no identifer given
+        if not self.request.args:
+            for mformat in self.repository.config.metadataformats:
+                metadataformat = etree.SubElement(xmlb, "metadataFormat")
+                for mkey, mval in mformat.items():
+                    elem = etree.SubElement(metadataformat, mkey)
+                    elem.text = mval
+        # TODO Invalid identifier
+        # TODO Valid identifier
         return xmlb

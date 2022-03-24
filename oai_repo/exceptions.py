@@ -2,9 +2,11 @@
 OAI Exceptions and Errors
 """
 
+class OAIRepoInternalError(Exception):
+    """Base class for internal errors to oai_repo"""
 
 class OAIException(Exception):
-    """Shared base class for OAI errors."""
+    """Shared base class for official OAI errors."""
     @classmethod
     def code(cls):
         """

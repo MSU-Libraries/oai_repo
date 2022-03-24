@@ -1,0 +1,22 @@
+{
+    "repositoryName": "MSU Libraries Digital Repository",
+    "baseUrl": "https://d.lib.msu.edu/oai",
+    "adminEmail": ["example@example.edu"],
+    "metadataFormats": [
+        {
+            "metadataPrefix": "oai_dc",
+            "schema": "http://www.openarchives.org/OAI/2.0/oai_dc.xsd",
+            "metadataNamespace": "http://www.openarchives.org/OAI/2.0/oai_dc/"
+        },
+        {
+            "metadataPrefix": "mods",
+            "schema": "http://www.loc.gov/standards/mods/v3/mods-3-4.xsd",
+            "metadataNamespace": "http://www.loc.gov/mods/v3"
+        }
+    ],
+    "earliestDatestamp": {
+        "static": "2012-08-21T13:49:50Z"
+    },
+    "deletedRecord": "no",
+    "granularity": "YYYY-MM-DDThh:mm:ssZ"
+}

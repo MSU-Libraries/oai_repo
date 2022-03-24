@@ -1,9 +1,0 @@
-{
-    "name": "MSU Libraries Digital Repository",
-    "baseurl": "https://d.lib.msu.edu/oai",
-    "admin-email": "example@example.edu",
-    "metadata-formats": {
-        "oai_dc": {},
-        "mods": "file.json"
-    }
-}

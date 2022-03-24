@@ -7,8 +7,7 @@ def test_nsref():
 
 
 def test_OAIRepository():
-    repo = oai_repo.OAIRepository("tests/inst1/repo1.json")
-    # TODO more configuration?
+    repo = oai_repo.OAIRepository("tests/configs/repo1.json")
 
     # Valid verb gets correct response class
     request = {
