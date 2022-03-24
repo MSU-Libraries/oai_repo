@@ -40,7 +40,7 @@ def nsref(key):
 class OAIResponse:
     """
     """
-    def __init__(self, repository: OAIRepository, request: OAIRequest, response_date: datetime = None):
+    def __init__(self, repository: OAIRepository, request: OAIRequest = None, response_date: datetime = None):
         """
         """
         self.repository = repository
@@ -55,13 +55,23 @@ class OAIResponse:
         # request element
         request_elem = etree.SubElement(self.xmlr, "request")
         request_elem.text = self.repository.config.baseurl
-        if self.success():
+        if self:
             for argk, argv in self.request.args.items():
                 request_elem.set(argk, argv)
+        # add body element
+        self.xmlr.append(self.body())
 
-    def success(self):
+    def __bool__(self):
         """Default to this being a successful OAI response"""
         return True
+
+    def body(self) -> etree.Element:
+        """
+        Abstract method to generate OAI response body
+        returns:
+            lxml.etree.Element
+        """
+        raise NotImplementedError("OAIResponse must implemented the body() method.")
 
     def root(self) -> etree.Element:
         """

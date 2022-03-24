@@ -16,6 +16,7 @@ def test_OAIRepository():
     }
     response = repo.process(request)
     assert isinstance(response, oai_repo.IdentifyResponse)
+    assert response
 
     # Invalid verb gets OAIErrorResponse
     request = {
@@ -23,7 +24,9 @@ def test_OAIRepository():
     }
     response = repo.process(request)
     assert isinstance(response, oai_repo.OAIErrorResponse)
-    # TODO check for 'badVerb' in response
+    assert not response
+    assert b"badVerb" in bytes(response)
+    assert b"The value of the 'verb' argument in the request is not legal." in bytes(response)
 
     # Unexpected args gets OAIErrorResponse
     request = {
@@ -32,7 +35,8 @@ def test_OAIRepository():
     }
     response = repo.process(request)
     assert isinstance(response, oai_repo.OAIErrorResponse)
-    # TODO check for 'badArgument' in response'
+    assert b"badArgument" in bytes(response)
+    assert b"Verb Identify does not allow other arguments." in bytes(response)
 
     # Missing required args gets OAIErrorResponse
     request = {
@@ -40,7 +44,7 @@ def test_OAIRepository():
     }
     response = repo.process(request)
     assert isinstance(response, oai_repo.OAIErrorResponse)
-    # TODO check for 'badArgument' in response'
+    assert b"badArgument" in bytes(response)
 
     # Exclusive argument passed with additional arguments
     request = {
@@ -50,7 +54,7 @@ def test_OAIRepository():
     }
     response = repo.process(request)
     assert isinstance(response, oai_repo.OAIErrorResponse)
-    # TODO check for 'badArgument' in response'
+    assert b"badArgument" in bytes(response)
 
     # ListMetadataFormats accepts identifier arg
     request = {

@@ -34,6 +34,9 @@ class OAIRequest:
         """
         self.args = args
 
+        if not self.allowed_args and len(self.args) > 0:
+            raise OAIErrorBadArgument(f"Verb {self.verb} does not allow other arguments.")
+
         if self.exclusive_arg and self.exclusive_arg in self.args and len(self.args) > 1:
             raise OAIErrorBadArgument(f"Argument {self.exclusive_arg} is exclusive; other arguments are not allowed.")
 
