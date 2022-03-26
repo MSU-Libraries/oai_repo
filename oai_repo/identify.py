@@ -1,13 +1,10 @@
 """
 Implementation of Identify verb
 """
-import json
-import requests
 from lxml import etree
-from .exceptions import OAIErrorBadArgument
 from .request import OAIRequest
 from .response import OAIResponse
-from . import helpers
+from .api import apicall_querypath
 
 
 class IdentifyRequest(OAIRequest):
@@ -16,14 +13,17 @@ class IdentifyRequest(OAIRequest):
     raises:
         OAIErrorBadArgument
     """
+    # pylint: disable=useless-super-delegation
     def __init__(self):
         super().__init__()
 
+    def post_parse(self):
+        """Runs after args are parsed"""
 
 class IdentifyResponse(OAIResponse):
     """Generate a resposne for the Identify verb"""
     def __repr__(self):
-        return f"IdentifyResponse()"
+        return "IdentifyResponse()"
 
     def body(self):
         """Response body"""
@@ -50,6 +50,7 @@ class IdentifyResponse(OAIResponse):
 
     def add_earliest_datestamp_element(self, xmlb: etree.Element):
         """
+        Add the earliestDatestamp field to the xml element based on config settings
         Raises:
             OAIRepoInternalError on API call or parse failure
         """
@@ -58,21 +59,17 @@ class IdentifyResponse(OAIResponse):
         if "static" in edconfig:
             earliestdatestamp.text = edconfig["static"]
         else:
-            try:
-                resp = requests.get(edconfig["url"], timeout=10)
-            except requests.RequestException as exc:
-                raise OAIRepoInternalError(f"Call to API failed: {edconfig['url']}")
-            if not resp.status_code == 200:
-                raise OAIRepoInternalError(f"Call to API returned {resp.status_code}: {edconfig['url']}")
-            if 'jsonpath' in edconfig:
-                loaded = json.loads(resp.text)
-                earliestdatestamp.text = helpers.jsonpath_find_first(loaded, edconfig["jsonpath"])
-                # TODO json load failure and jsonpath syntax failure
-            elif 'xpath' in edconfig:
-                loaded = etree.fromstring(resp.content)
-                earliestdatestamp.text = helpers.xpath_find_first(loaded, edconfig["xpath"])
-                # TODO xml load failure and xpath syntax failure
+            earliestdatestamp.text = apicall_querypath(**edconfig)
 
     def add_description_elements(self, xmlb: etree.Element):
         """
+        Load XML files from config settings and add them as description elements to the xml element
+        Raises:
+            OAIRepoInternalError on failure
         """
+        for desc_filepath in self.repository.config.description:
+            desc_root = etree.parse(desc_filepath)
+            for child_elem in desc_root.getroot():
+                desc_element = etree.SubElement(xmlb, "description")
+                desc_element.append(child_elem)
+        # TODO catch xml errors

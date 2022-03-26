@@ -6,6 +6,7 @@ import cerberus
 from .schemas import config_schema
 from .exceptions import OAIRepoInternalError
 
+# pylint: disable=too-many-instance-attributes
 class OAIConfig:
     """
     Wrapper class for the config file
@@ -18,9 +19,11 @@ class OAIConfig:
         self.metadataformats: dict = {}
         self.earliestdatestamp: str|dict = "1900-01-01T00:00:00Z"
         self.deletedrecord: str = "no"
-        self.granularity: str = "YYYY-MM-DDThh:mm:ssZ",
+        self.granularity: str = "YYYY-MM-DDThh:mm:ssZ"
         self.compression: list = []
         self.description: list = []
+        self.identifier: dict = {}
+        self.metadataformatsquery: dict = {}
         if self.filepath:
             self.load_file(self.filepath)
 
@@ -40,7 +43,9 @@ class OAIConfig:
         except FileNotFoundError:
             raise OAIRepoInternalError(f"Could not find config file: {self.filepath}") from None
         except json.JSONDecodeError as exc:
-            raise OAIRepoInternalError(f"Unable to decode config file ({self.filepath}): {exc}") from None
+            raise OAIRepoInternalError(
+                f"Unable to decode config file ({self.filepath}): {exc}"
+            ) from None
 
         # Assert structure
         cerbval = cerberus.Validator(config_schema)
@@ -57,3 +62,5 @@ class OAIConfig:
         self.granularity = config.get("granularity", self.granularity)
         self.compression = config.get("compression", self.compression)
         self.description = config.get("description", self.description)
+        self.identifier = config.get("identifier", self.description)
+        self.metadataformatsquery = config.get("metadataFormatsQuery", self.metadataformatsquery)

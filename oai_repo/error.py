@@ -1,11 +1,11 @@
 """
 OAI Error
 """
-from __future__ import annotations      # So can use non-string type hinting; can be removed in Python 3.11
+from __future__ import annotations      # To use non-string type hinting; can remove in Python 3.11
 from typing import TYPE_CHECKING
+from lxml import etree
 from .response import OAIResponse
 from .exceptions import OAIException
-from lxml import etree
 if TYPE_CHECKING:                       # Prevent circular imports for type hinting
     from .repository import OAIRepository
 

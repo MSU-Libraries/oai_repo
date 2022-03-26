@@ -2,22 +2,34 @@
     "repositoryName": "MSU Libraries Digital Repository",
     "baseUrl": "https://d.lib.msu.edu/oai",
     "adminEmail": ["admin1@example.edu", "admin2@example.edu"],
-    "metadataFormats": [
-        {
-            "metadataPrefix": "oai_dc",
-            "schema": "http://www.openarchives.org/OAI/2.0/oai_dc.xsd",
-            "metadataNamespace": "http://www.openarchives.org/OAI/2.0/oai_dc/"
-        },
-        {
-            "metadataPrefix": "mods",
-            "schema": "http://www.loc.gov/standards/mods/v3/mods-3-4.xsd",
-            "metadataNamespace": "http://www.loc.gov/mods/v3"
-        }
-    ],
     "earliestDatestamp": {
         "url": "http://api.plos.org/search?q=id:%2210.1371/journal.pone.0132184%22&fl=publication_date",
         "jsonpath": "$.response.docs[0].publication_date"
     },
     "deletedRecord": "no",
-    "granularity": "YYYY-MM-DDThh:mm:ssZ"
+    "granularity": "YYYY-MM-DDThh:mm:ssZ",
+    "metadataFormats": [
+        {
+            "metadataPrefix": "oai_dc",
+            "schema": "http://www.openarchives.org/OAI/2.0/oai_dc.xsd",
+            "metadataNamespace": "http://www.openarchives.org/OAI/2.0/oai_dc/",
+            "fieldValue": "DC"
+        },
+        {
+            "metadataPrefix": "mods",
+            "schema": "http://www.loc.gov/standards/mods/v3/mods-3-4.xsd",
+            "metadataNamespace": "http://www.loc.gov/mods/v3",
+            "fieldValue": "MODS"
+        }
+    ],
+    "availableMetadataFormats": {
+        "url": "https://solr.devel.lib.msu.edu/solr/fedcom/select?q=PID:\"$LOCAL_ID$\"",
+        "jsonpath": "$.response.docs[0].fedora_datastreams_ms"
+    },
+    "identifier": {
+        "prefix": "oai:d.lib.msu.edu:",
+        "transforms": [
+            [":", "_"]
+        ]
+    }
 }

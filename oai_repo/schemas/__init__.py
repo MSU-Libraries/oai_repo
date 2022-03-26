@@ -2,13 +2,7 @@
 Cerberus Schemas
 """
 
-_earliestdatestamp_schemas = [
-    {
-        "static": {
-            "required": True,
-            "type": "string",
-        }
-    },
+_url_query = [
     {
         "url": {
             "required": True,
@@ -30,6 +24,15 @@ _earliestdatestamp_schemas = [
         }
     }
 ]
+
+_earliestdatestamp_schemas = [
+    {
+        "static": {
+            "required": True,
+            "type": "string",
+        }
+    }
+] + _url_query
 
 config_schema = {
     "repositoryName": {
@@ -65,7 +68,11 @@ config_schema = {
                 "metadataNamespace": {
                     "required": True,
                     "type": "string"
-                }
+                },
+                "fieldValue": {
+                    "required": True,
+                    "type": "string"
+                },
             }
         }
     },
@@ -90,7 +97,33 @@ config_schema = {
     "description": {
         "type": "list",
         "schema": {
-            "type": "dict"
+            "type": "string"
+        }
+    },
+    "metadataFormatsQuery": {
+        "required": True,
+        "type": "dict",
+        "oneof_schema": _url_query
+    },
+    "identifier": {
+        "required": True,
+        "type": "dict",
+        "schema": {
+            "prefix": {
+                "required": True,
+                "type": "string",
+            },
+            "transforms": {
+                "type": "list",
+                "schema": {
+                    "type": "list",
+                    "minlength": 2,
+                    "maxlength": 2,
+                    "schema": {
+                        "type": "string",
+                    }
+                }
+            }
         }
     }
 }

@@ -2,39 +2,63 @@
 Implementation of ListMetadataFormats verb
 """
 from lxml import etree
-from .exceptions import OAIErrorBadArgument, OAIErrorIdDoesNotExist, OAIErrorNoMetadataFormats
 from .request import OAIRequest
 from .response import OAIResponse
+from .api import apicall_querypath
 
 
 class ListMetadataFormatsRequest(OAIRequest):
     """
+    Parse a request for the ListMetadataFormats verb
     raises:
         OAIErrorBadArgument
-        OAIErrorIdDoesNotExist      # Here or Response?
-        OAIErrorNoMetadataFormats   # Here or Response?
+        OAIErrorIdDoesNotExist
+        OAIErrorNoMetadataFormats
     """
     def __init__(self):
         super().__init__()
         self.optional_args = ['identifier']
+        self.identifier = None
+
+    def post_parse(self):
+        """Runs after args are parsed"""
+        if self.args:
+            self.identifier = self.args["identifier"]
+            # TODO IdDoesNotExist
+            # TODO NoMetadataFormats
 
 
 class ListMetadataFormatsResponse(OAIResponse):
-    """
-    """
-    def __repr__(self):
-        return f"ListMetadataFormatsResponse()"
+    """Generate a resposne for the ListMetadataFormats verb"""
+    VALID_ELEMENTS = ["metadataPrefix", "schema", "metadataNamespace"]
 
-    def body(self):
+    def __repr__(self):
+        return f"ListMetadataFormatsResponse(identifier={self.request.identifier})"
+
+    def body(self) -> etree.Element:
         """Response body"""
         xmlb = etree.Element("ListMetadataFormats")
-        # With no identifer given
-        if not self.request.args:
-            for mformat in self.repository.config.metadataformats:
-                metadataformat = etree.SubElement(xmlb, "metadataFormat")
-                for mkey, mval in mformat.items():
-                    elem = etree.SubElement(metadataformat, mkey)
-                    elem.text = mval
-        # TODO Invalid identifier
-        # TODO Valid identifier
+        if not self.request.identifier:
+            for mdformat in self.repository.config.metadataformats:
+                self.add_format(xmlb, mdformat)
+        else:
+            local_id = self.repository.local_id(self.request.identifier)
+            mdquery = self.repository.config.metadataformatsquery
+            mdquery["url"] = mdquery["url"].replace("$LOCAL_ID$", local_id)
+            metadata_formats = apicall_querypath(**mdquery)
+            for mdformat in self.repository.config.metadataformats:
+                if mdformat["fieldValue"] not in metadata_formats:
+                    continue
+                self.add_format(xmlb, mdformat)
         return xmlb
+
+    def add_format(self, xmlb: etree.Element, mdformat: dict):
+        """
+        Add the given metadta format to the provided xml element
+        """
+        mdf_elem = etree.SubElement(xmlb, "metadataFormat")
+        for mkey, mval in mdformat.items():
+            if mkey not in self.VALID_ELEMENTS:
+                continue
+            elem = etree.SubElement(mdf_elem, mkey)
+            elem.text = mval
