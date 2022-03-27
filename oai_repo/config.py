@@ -1,29 +1,32 @@
 """
 Config file for OAI repository
 """
+from copy import deepcopy
 import json
 import cerberus
 from .schemas import config_schema
-from .exceptions import OAIRepoInternalError
+from .exceptions import OAIRepoInternalException
 
-# pylint: disable=too-many-instance-attributes
 class OAIConfig:
     """
     Wrapper class for the config file
     """
     def __init__(self, filepath: str = None):
         self.filepath: str = filepath
-        self.repositoryname: str = 'Example OAI-PMH Repository'
-        self.baseurl: str = 'http://oai.example.edu'
-        self.adminemail: str = 'admin@oai.example.edu'
-        self.metadataformats: dict = {}
-        self.earliestdatestamp: str|dict = "1900-01-01T00:00:00Z"
-        self.deletedrecord: str = "no"
-        self.granularity: str = "YYYY-MM-DDThh:mm:ssZ"
-        self.compression: list = []
-        self.description: list = []
-        self.identifier: dict = {}
-        self.metadataformatsquery: dict = {}
+        self._config: dict = {}
+        self._defaults: dict = {
+            "repositoryName": "Example OAI-PMH Repository",
+            "baseURL": "http://example.edu/oai",
+            "adminEmail": "admin@oai.example.edu",
+            "metadataFormats": {},
+            "earliestDatestamp": "1900-01-01T00:00:00Z",
+            "deletedRecord": "no",
+            "granularity": "YYYY-MM-DDThh:mm:ssZ",
+            "compression": [],
+            "description": [],
+            "identifier": {},
+            "metadataFormatsQuery": {}
+        }
         if self.filepath:
             self.load_file(self.filepath)
 
@@ -33,7 +36,7 @@ class OAIConfig:
         Args:
             filepath: The path to the config file to load
         Raises:
-            OAIRepoInternalError: If the config file could not be opened, parsed, or is invalid
+            OAIRepoInternalException: If the config file could not be opened, parsed, or is invalid
         """
         self.filepath = filepath
         config = {}
@@ -41,26 +44,23 @@ class OAIConfig:
             with open(self.filepath, 'r', encoding='utf8') as fileh:
                 config = json.load(fileh)
         except FileNotFoundError:
-            raise OAIRepoInternalError(f"Could not find config file: {self.filepath}") from None
+            raise OAIRepoInternalException(f"Could not find config file: {self.filepath}") from None
         except json.JSONDecodeError as exc:
-            raise OAIRepoInternalError(
+            raise OAIRepoInternalException(
                 f"Unable to decode config file ({self.filepath}): {exc}"
             ) from None
 
         # Assert structure
         cerbval = cerberus.Validator(config_schema)
         if not cerbval.validate(config):
-            raise OAIRepoInternalError(f"Invalid config file ({self.filepath}): {cerbval.errors}")
+            raise OAIRepoInternalException(
+                f"Invalid config file ({self.filepath}): {cerbval.errors}"
+            )
 
-        # Set config properties
-        self.name = config.get('repositoryName', self.repositoryname)
-        self.baseurl = config.get('baseUrl', self.baseurl)
-        self.adminemail = config.get('adminEmail', self.adminemail)
-        self.metadataformats = config.get('metadataFormats', self.metadataformats)
-        self.earliestdatestamp = config.get("earliestDatestamp", self.earliestdatestamp)
-        self.deletedrecord = config.get("deletedRecord", self.deletedrecord)
-        self.granularity = config.get("granularity", self.granularity)
-        self.compression = config.get("compression", self.compression)
-        self.description = config.get("description", self.description)
-        self.identifier = config.get("identifier", self.description)
-        self.metadataformatsquery = config.get("metadataFormatsQuery", self.metadataformatsquery)
+        self._config = config
+
+    def __getattr__(self, name):
+        for key, default in self._defaults.items():
+            if key.lower() == name:
+                return deepcopy(self._config.get(key, default))
+        raise AttributeError

@@ -39,7 +39,7 @@ config_schema = {
         "required": True,
         "type": "string",
     },
-    "baseUrl": {
+    "baseURL": {
         "required": True,
         "type": "string",
     },
@@ -103,7 +103,18 @@ config_schema = {
     "metadataFormatsQuery": {
         "required": True,
         "type": "dict",
-        "oneof_schema": _url_query
+        "schema": {
+            "idExists": {
+                "required": True,
+                "type": "dict",
+                "oneof_schema": _url_query
+            },
+            "fieldValues": {
+                "required": True,
+                "type": "dict",
+                "oneof_schema": _url_query
+            }
+        }
     },
     "identifier": {
         "required": True,

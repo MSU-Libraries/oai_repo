@@ -54,6 +54,7 @@ class OAIRequest:
             raise OAIErrorBadArgument(
                 f"Verb {self.verb} only allows arguments: {','.join(self.allowed_args)}"
             )
+        self.post_parse()
 
     def post_parse(self):
         """Runs after args are parsed"""

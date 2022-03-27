@@ -1,6 +1,6 @@
 {
     "repositoryName": "MSU Libraries Digital Repository",
-    "baseUrl": "https://d.lib.msu.edu/oai",
+    "baseURL": "https://d.lib.msu.edu/oai",
     "adminEmail": ["example@example.edu"],
     "earliestDatestamp": {
         "static": "2012-08-21T13:49:50Z"
@@ -25,8 +25,14 @@
         }
     ],
     "metadataFormatsQuery": {
-        "url": "https://solr.devel.lib.msu.edu/solr/fedcom/select?q=PID:\"$LOCAL_ID$\"&fl=fedora_datastreams_ms",
-        "jsonpath": "$.response.docs[0].fedora_datastreams_ms"
+        "idExists": {
+            "url": "https://sandhill.lib.msu.edu/search.json?q=PID:\"$LOCAL_ID$\"&fl=fedora_datastreams_ms",
+            "jsonpath": "$.response.docs[0]"
+        },
+        "fieldValues": {
+            "url": "https://sandhill.lib.msu.edu/search.json?q=PID:\"$LOCAL_ID$\"&fl=fedora_datastreams_ms",
+            "jsonpath": "$.response.docs[0].fedora_datastreams_ms"
+        }
     },
     "identifier": {
         "prefix": "oai:my.example.edu:",

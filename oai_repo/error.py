@@ -5,7 +5,7 @@ from __future__ import annotations      # To use non-string type hinting; can re
 from typing import TYPE_CHECKING
 from lxml import etree
 from .response import OAIResponse
-from .exceptions import OAIException
+from .exceptions import OAIError
 if TYPE_CHECKING:                       # Prevent circular imports for type hinting
     from .repository import OAIRepository
 
@@ -13,7 +13,7 @@ class OAIErrorResponse(OAIResponse):
     """
     Reponse for an request that generated an OAI error.
     """
-    def __init__(self, repository: OAIRepository, exc: OAIException):
+    def __init__(self, repository: OAIRepository, exc: OAIError):
         self.code = exc.code()
         self.message = str(exc)
         super().__init__(repository)

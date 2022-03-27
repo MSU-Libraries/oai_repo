@@ -1,4 +1,6 @@
+import pytest
 import oai_repo
+from oai_repo.exceptions import OAIErrorIdDoesNotExist
 
 def test_ListMetadataFormats():
     # No identifier given
@@ -11,10 +13,16 @@ def test_ListMetadataFormats():
 
     # Invalid identifier
     repo = oai_repo.OAIRepository("tests/configs/repo3.json")
-    #TODO
+    request = { 'verb': 'ListMetadataFormats', 'identifier': 'NotAValidIdentifierFormat' }
+    lmf_req = repo.create_request(request)
+    with pytest.raises(OAIErrorIdDoesNotExist):
+        lmf_resp = repo.create_response(lmf_req)
 
     # Valid identifier but doesn't exist
-    #TODO
+    request = { 'verb': 'ListMetadataFormats', 'identifier': 'oai:d.lib.msu.edu:notRealId' }
+    lmf_req = repo.create_request(request)
+    with pytest.raises(OAIErrorIdDoesNotExist):
+        lmf_resp = repo.create_response(lmf_req)
 
     # Valid identifier given
     request = { 'verb': 'ListMetadataFormats', 'identifier': 'oai:d.lib.msu.edu:etd_1000' }

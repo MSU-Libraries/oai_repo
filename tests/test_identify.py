@@ -1,5 +1,7 @@
 from lxml import etree
+import pytest
 import oai_repo
+from oai_repo.exceptions import OAIErrorBadArgument
 
 def test_IdentifyResponse():
     # earliestDatestamp: static
@@ -28,3 +30,9 @@ def test_IdentifyResponse():
     xmlr = etree.Element("root")
     identify_resp.add_earliest_datestamp_element(xmlr)
     assert b"<earliestDatestamp>2015-07-15T00:00:00Z</earliestDatestamp>" in etree.tostring(xmlr)
+
+    # Passing an unwanted arg
+    request = { 'verb': 'Identify', 'arg': 'unwanted' }
+    with pytest.raises(OAIErrorBadArgument):
+        identify_req = repo.create_request(request)
+

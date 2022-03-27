@@ -5,6 +5,7 @@ from lxml import etree
 from .request import OAIRequest
 from .response import OAIResponse
 from .api import apicall_querypath
+from .exceptions import OAIErrorIdDoesNotExist, OAIErrorNoMetadataFormats
 
 
 class ListMetadataFormatsRequest(OAIRequest):
@@ -18,18 +19,24 @@ class ListMetadataFormatsRequest(OAIRequest):
     def __init__(self):
         super().__init__()
         self.optional_args = ['identifier']
-        self.identifier = None
+        self.identifier: str = None
 
     def post_parse(self):
         """Runs after args are parsed"""
         if self.args:
             self.identifier = self.args["identifier"]
-            # TODO IdDoesNotExist
-            # TODO NoMetadataFormats
+
+    def __repr__(self):
+        return f"ListMetadataFormatsResponse(identifier={self.identifier})"
 
 
 class ListMetadataFormatsResponse(OAIResponse):
-    """Generate a resposne for the ListMetadataFormats verb"""
+    """
+    Generate a resposne for the ListMetadataFormats verb
+    raises:
+        OAIErrorIdDoesNotExist
+        OAIErrorNoMetadataFormats
+    """
     VALID_ELEMENTS = ["metadataPrefix", "schema", "metadataNamespace"]
 
     def __repr__(self):
@@ -44,8 +51,20 @@ class ListMetadataFormatsResponse(OAIResponse):
         else:
             local_id = self.repository.local_id(self.request.identifier)
             mdquery = self.repository.config.metadataformatsquery
-            mdquery["url"] = mdquery["url"].replace("$LOCAL_ID$", local_id)
-            metadata_formats = apicall_querypath(**mdquery)
+            # Check if identifier exists
+            idexists = mdquery["idExists"]
+            idexists["url"] = idexists["url"].replace("$LOCAL_ID$", local_id)
+            id_match = apicall_querypath(**idexists)
+            if not id_match:
+                raise OAIErrorIdDoesNotExist("The given identifier does not exist.")
+
+            # Query to get list of formats
+            fieldvalues = mdquery["fieldValues"]
+            fieldvalues["url"] = fieldvalues["url"].replace("$LOCAL_ID$", local_id)
+            metadata_formats = apicall_querypath(**fieldvalues)
+            if not metadata_formats:
+                raise OAIErrorNoMetadataFormats("No metadata fomats found for given identifier.")
+
             for mdformat in self.repository.config.metadataformats:
                 if mdformat["fieldValue"] not in metadata_formats:
                     continue

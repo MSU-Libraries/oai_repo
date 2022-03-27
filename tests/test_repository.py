@@ -64,6 +64,17 @@ def test_OAIRepository_process():
     response = repo.process(request)
     assert isinstance(response, oai_repo.ListMetadataFormatsResponse)
     assert b'identifier="oai:d.lib.msu.edu:etd_1000"' in bytes(response)
+    assert b'<metadataPrefix>mods</metadataPrefix>' in bytes(response)
+    assert b'<metadataPrefix>oai_dc</metadataPrefix>' in bytes(response)
+
+    # ListMetadataFormats for identifier that does not exist
+    request = {
+        'verb': 'ListMetadataFormats',
+        'identifier': 'oai:d.lib.msu.edu:fakeID'
+    }
+    response = repo.process(request)
+    assert isinstance(response, oai_repo.OAIErrorResponse)
+    assert b"idDoesNotExist" in bytes(response)
 
 def test_OAIRepository_identifier():
     repo = oai_repo.OAIRepository("tests/configs/repo1.json")

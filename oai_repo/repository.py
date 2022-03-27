@@ -8,7 +8,7 @@ from .listidentifiers import ListIdentifiersRequest, ListIdentifiersResponse
 from .listmetadataformats import ListMetadataFormatsRequest, ListMetadataFormatsResponse
 from .listrecords import ListRecordsRequest, ListRecordsResponse
 from .listsets import ListSetsRequest, ListSetsResponse
-from .exceptions import OAIException, OAIErrorBadVerb, OAIErrorIdDoesNotExist
+from .exceptions import OAIError, OAIErrorBadVerb, OAIErrorIdDoesNotExist
 from .error import OAIErrorResponse
 from .request import OAIRequest
 from .response import OAIResponse
@@ -43,7 +43,7 @@ class OAIRepository:
             if isinstance(request, dict):
                 request = self.create_request(request)
             response = self.create_response(request)
-        except OAIException as exc:
+        except OAIError as exc:
             response = OAIErrorResponse(self, exc)
         return response
 
