@@ -2,20 +2,21 @@
 The `oai_repo` Python module provides a configurable implementation of a
 [OAI-PMH](http://openarchives.org/OAI/openarchivesprotocol.html) compatible repository.
 
-At its simplest, you:
-1. define a config file
-2. use a bit of Python code similar to this
-```
+At its simplest, using `oai_repo` involves:
+1. Definng a config file.
+2. Using a bit of Python code similar to:
+```python
 import oai_repo
 
 # Create the repository, loading the config
 repo = oai_repo.OAIRepository("/my/config.json")
+
 # Pass in URL arguments as a dict to be processed
 response = repo.process( { "verb": "Identify" } )
 print( type(response.root()) )  # lxml.etree.Element
 print( bytes(response) )        # Example output below
 ```
-```
+```xml
 <?xml version="1.0" encoding="UTF-8"?>
 <OAI-PMH xmlns="http://www.openarchives.org/OAI/2.0/"
   xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
@@ -58,19 +59,30 @@ pip install oai_repo
 The `oai_repo` config file is a JSON file which specifies all the information your OAI-PMH repository needs to operate.
 
 Fields in the config file are:  
-`repositoryName` _(Required, String)_: The name of the repository put into the OAI `Identify` verb.  
-`baseURL` _(Required, String)_: The URL reported in the OAI `Identify` verb and in the `request` element in all responses.  
-`adminEmail` _(Required, List, Minimum 1)_: A list of email addresses to include in the `Identify` verb.  
-`earliestDatestamp` _(Required, Dict)_: Define the earliest datestamp as reported in the `Identify` verb. May be set in two ways:  
+`repositoryName` _(Required, String)_: The name of the repository put into the OAI `Identify` verb.
+
+`baseURL` _(Required, String)_: The URL reported in the OAI `Identify` verb and in the `request` element in all responses.
+
+`adminEmail` _(Required, List, Minimum 1)_: A list of email addresses to include in the `Identify` verb.
+
+`earliestDatestamp` _(Required, Dict)_: Define the earliest datestamp as reported in the `Identify` verb. May be set in two ways:
+
 1. `static` _(String)_: A manually set datestamp string.
 2. `url`/`*path` pair: Dynamically query for this value.
-`deletedRecord` _(Required, String)_: The value to return in the OAI `Identify` verb.  
-`granularity` _(Required, String)_: The value to return in the OAI `Identify` verb.  
-`compression` _(Optional, List)_: A list of supported compression types. Per the OAI-PMH specification, do not set the implied `identity` coding.  
-`description` _(Optional, List)_: A list of XML files to load and serve as descriptions in the OAI `Identify` verb. This file must have a root `<description>` element with appropriate XML namespaces set where needed.  
-`metadataFormats` _(Required, List)_: TODO  
-`metadataFormatsQuery` _(Required, Dict)_: TODO  
-`identifier` _(Required, Dict)_: TODO  
+
+`deletedRecord` _(Required, String)_: The value to return in the OAI `Identify` verb.
+
+`granularity` _(Required, String)_: The value to return in the OAI `Identify` verb.
+
+`compression` _(Optional, List)_: A list of supported compression types. Per the OAI-PMH specification, do not set the implied `identity` coding.
+
+`description` _(Optional, List)_: A list of XML files to load and serve as descriptions in the OAI `Identify` verb. This file must have a root `<description>` element with appropriate XML namespaces set where needed.
+
+`metadataFormats` _(Required, List)_: TODO
+
+`metadataFormatsQuery` _(Required, Dict)_: TODO
+
+`identifier` _(Required, Dict)_: TODO
 
 ### URL/Path Pairs
 To have the OAI repository load data dymanically, the config file allows for
@@ -89,29 +101,29 @@ field list, this is specified by `url`/`*path`. This can be either of:
 Once the config file is defined, adding `oai_repo` is quite simple.
 
 Create respository instance, passing in config:
-```
+```python
 import oai_repo
 repo = oai_repo.OAIRepository("/path/config.json")
 ```
 
 Pass in URL arguments as a dict to process the request:
-```
+```python
 response = repo.process( request.args )
 ```
 
 The response can be accessed directly as XML:
-```
+```python
 xml_root_element = response.root()
 ```
 
 Or response can be cast into a fully formed XML document:
-```
+```python
 xml_doc_as_bytes = bytes(response)
 ```
 
 The `OAIRepository` may raise the `OAIRepoInternalException`
 and `OAIRepoExternalException` exceptions:
-```
+```python
 try:
     repo = oai_repo.OAIRepository("/path/config.json")
     response = repo.process( args )
