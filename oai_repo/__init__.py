@@ -2,7 +2,6 @@
 OAI-PMH Repository
 """
 __version__ = "0.1"
-__author__ = 'Michigan State University Libraries'
 
 from .exceptions import OAIRepoException, OAIRepoInternalException, OAIRepoExternalException
 from .repository import OAIRepository

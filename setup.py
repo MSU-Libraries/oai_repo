@@ -14,8 +14,8 @@ setuptools.setup(
     description='OAI-PMH Repository Server',
     long_description=readme,
     long_description_content_type="text/markdown",
-    author=oai_repo.__author__,
-    author_email='repoteam@lib.msu.edu',
+    author="Nate Collins",
+    author_email="npcollins@gmail.com",
     url='https://github.com/MSU-Libraries/oai_repo',
     classifiers=[
         'Intended Audience :: Developers',
