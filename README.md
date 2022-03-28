@@ -3,8 +3,8 @@ The `oai_repo` Python module provides a configurable implementation of a
 [OAI-PMH](http://openarchives.org/OAI/openarchivesprotocol.html) compatible repository.
 
 At its simplest, using `oai_repo` involves:
-1. Definng a config file.
-2. Using a bit of Python code similar to:
+1. Defining a config file.
+2. Adding a few lines of Python code similar to:
 ```python
 import oai_repo
 
@@ -27,7 +27,7 @@ print( bytes(response) )        # Example output below
         <repositoryName>MSU Libraries Digital Repository</repositoryName>
         <baseURL>https://d.lib.msu.edu/oai</baseURL>
         <protocolVersion>2.0</protocolVersion>
-        <adminEmail>fedcomall@mail.lib.msu.edu</adminEmail>
+        <adminEmail>admin@example.edu</adminEmail>
         <earliestDatestamp>2012-08-21T13:49:50Z</earliestDatestamp>
         <deletedRecord>no</deletedRecord>
         <granularity>YYYY-MM-DDThh:mm:ssZ</granularity>
@@ -50,6 +50,8 @@ print( bytes(response) )        # Example output below
 * Easy to integrate within any Python application.
 
 ## Installation
+Requires Python 3.9+
+
 Installation via `pip` is recommended:
 ```
 pip install oai_repo
@@ -98,7 +100,7 @@ field list, this is specified by `url`/`*path`. This can be either of:
 * `xpath` _(String)_: An XPath to call on the results of the URL, retrieving the first match.
 
 ## The Code
-Once the config file is defined, adding `oai_repo` is quite simple.
+Once the config file is defined, adding `oai_repo` to your application is simple.
 
 Create respository instance, passing in config:
 ```python

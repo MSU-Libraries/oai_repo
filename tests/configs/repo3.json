@@ -1,6 +1,6 @@
 {
     "repositoryName": "MSU Libraries Digital Repository",
-    "baseURL": "http://d.lib.msu.edu/oai",
+    "baseURL": "https://d.lib.msu.edu/oai",
     "adminEmail": ["admin1@example.edu", "admin2@example.edu"],
     "earliestDatestamp": {
         "url": "http://api.plos.org/search?q=id:%2210.1371/journal.pone.0132184%22&fl=publication_date&wt=xml",
@@ -32,10 +32,10 @@
             "jsonpath": "$.response.docs[0].fedora_datastreams_ms"
         }
     },
-    "identifier": {
-        "prefix": "oai:d.lib.msu.edu:",
+    "localId": {
+        "identifierPrefix": "oai:d.lib.msu.edu:",
         "transforms": [
-            [":", "_"]
+            ["replace", ":", "_"]
         ]
     }
 }

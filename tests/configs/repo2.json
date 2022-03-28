@@ -32,10 +32,10 @@
             "jsonpath": "$.response.docs[0].fedora_datastreams_ms"
         }
     },
-    "identifier": {
-        "prefix": "oai:d.lib.msu.edu:",
+    "localId": {
+        "identifierPrefix": "oai:d.lib.msu.edu:",
         "transforms": [
-            [":", "_"]
+            ["replace", ":", "_"]
         ]
     }
 }

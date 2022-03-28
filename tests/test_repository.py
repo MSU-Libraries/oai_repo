@@ -1,4 +1,6 @@
+import pytest
 import oai_repo
+from oai_repo.exceptions import OAIErrorIdDoesNotExist
 from oai_repo.response import nsref
 
 def test_nsref():
@@ -83,3 +85,6 @@ def test_OAIRepository_identifier():
 def test_OAIRepository_local_id():
     repo = oai_repo.OAIRepository("tests/configs/repo1.json")
     assert repo.local_id("oai:my.example.edu:abc_123") == "abc:123"
+
+    with pytest.raises(OAIErrorIdDoesNotExist):
+        repo.local_id("oai:badprefix.edu:abc_123")

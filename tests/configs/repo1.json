@@ -34,10 +34,10 @@
             "jsonpath": "$.response.docs[0].fedora_datastreams_ms"
         }
     },
-    "identifier": {
-        "prefix": "oai:my.example.edu:",
+    "localId": {
+        "identifierPrefix": "oai:my.example.edu:",
         "transforms": [
-            [":", "_"]
+            ["replace", ":", "_"]
         ]
     }
 }

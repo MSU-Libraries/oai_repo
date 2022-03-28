@@ -66,18 +66,20 @@ class OAIRepository:
 
     def identifier(self, local_id: str) -> str:
         """Convert from local id value to OAI identifier"""
-        if "transforms" in self.config.identifier:
-            for transform in self.config.identifier["transforms"]:
-                local_id = local_id.replace(transform[0], transform[1])
-        return self.config.identifier["prefix"] + local_id
+        if "transforms" in self.config.localid:
+            for tftype, *tfargs in self.config.localid["transforms"]:
+                if tftype == "replace":
+                    local_id = local_id.replace(tfargs[0], tfargs[1])
+        return self.config.localid["identifierPrefix"] + local_id
 
     def local_id(self, identifier: str) -> str:
         """Convert from OAI identifier to local id value"""
-        prefix = self.config.identifier["prefix"]
+        prefix = self.config.localid["identifierPrefix"]
         if not identifier.startswith(prefix):
             raise OAIErrorIdDoesNotExist("Identifier argument is invalid.")
         local_id = identifier.removeprefix(prefix)
-        if "transforms" in self.config.identifier:
-            for transform in self.config.identifier["transforms"]:
-                local_id = local_id.replace(transform[1], transform[0])
+        if "transforms" in self.config.localid:
+            for tftype, *tfargs in self.config.localid["transforms"]:
+                if tftype == "replace":
+                    local_id = local_id.replace(tfargs[1], tfargs[0])
         return local_id

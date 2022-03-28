@@ -34,6 +34,20 @@ _earliestdatestamp_schemas = [
     }
 ] + _url_query
 
+_transform_schemas = [
+    {
+        "type": "list",
+        "items": [
+            {
+                "type": "string",
+                "allowed": ["replace"]
+            },
+            { "type": "string" },
+            { "type": "string" }
+        ]
+    }
+]
+
 config_schema = {
     "repositoryName": {
         "required": True,
@@ -116,24 +130,17 @@ config_schema = {
             }
         }
     },
-    "identifier": {
+    "localId": {
         "required": True,
         "type": "dict",
         "schema": {
-            "prefix": {
+            "identifierPrefix": {
                 "required": True,
                 "type": "string",
             },
             "transforms": {
                 "type": "list",
-                "schema": {
-                    "type": "list",
-                    "minlength": 2,
-                    "maxlength": 2,
-                    "schema": {
-                        "type": "string",
-                    }
-                }
+                "oneof_schema": _transform_schemas,
             }
         }
     }

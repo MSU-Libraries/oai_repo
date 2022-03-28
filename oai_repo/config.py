@@ -24,7 +24,7 @@ class OAIConfig:
             "granularity": "YYYY-MM-DDThh:mm:ssZ",
             "compression": [],
             "description": [],
-            "identifier": {},
+            "localId": {},
             "metadataFormatsQuery": {}
         }
         if self.filepath:
