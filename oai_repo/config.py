@@ -4,7 +4,7 @@ Config file for OAI repository
 from copy import deepcopy
 import json
 import cerberus
-from .schemas import config_schema
+from . import schemas
 from .exceptions import OAIRepoInternalException
 
 class OAIConfig:
@@ -51,7 +51,7 @@ class OAIConfig:
             ) from None
 
         # Assert structure
-        cerbval = cerberus.Validator(config_schema)
+        cerbval = cerberus.Validator(schemas.config_schema)
         if not cerbval.validate(config):
             raise OAIRepoInternalException(
                 f"Invalid config file ({self.filepath}): {cerbval.errors}"

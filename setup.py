@@ -24,5 +24,12 @@ setuptools.setup(
         'Operating System :: OS Independent',
         'Programming Language :: Python',
         'Programming Language :: Python :: 3',
+    ],
+    python_requires=">=3.9",
+    install_requires=[
+        "Cerberus >= 1.3",
+        "jsonpath-ng >= 1.5",
+        "lxml >= 4.8",
+        "requests >= 2.27",
     ]
 )
