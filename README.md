@@ -80,11 +80,15 @@ Fields in the config file are:
 
 `description` _(Optional, List)_: A list of XML files to load and serve as descriptions in the OAI `Identify` verb. This file must have a root `<description>` element with appropriate XML namespaces set where needed.
 
-`metadataFormats` _(Required, List)_: TODO
+`metadataFormats` _(Required, List)_: List of metadata formats that will be made available via OAI repository.
+ * `metadataPrefix` _(String)_: The value to be placed in the `ListMetadataFormats` response.
+ * `schema` _(String)_: The value to be placed in the `ListMetadataFormats` response.
+ * `metadataNamespace` _(String)_: The to be value placed in the `ListMetadataFormats` response.
+ * `fieldValue` _(String)_: The value to be matched in `metadataFormatsQuery.fieldValues`. (An identifier is considered to have a metadata format when `fieldValue` is contained within the results of the `fieldValues` query.)
 
 `metadataFormatsQuery` _(Required, Dict)_: TODO
 
-`identifier` _(Required, Dict)_: TODO
+`localId` _(Required, Dict)_: TODO
 
 ### URL/Path Pairs
 To have the OAI repository load data dymanically, the config file allows for

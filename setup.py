@@ -16,7 +16,7 @@ setuptools.setup(
     long_description_content_type="text/markdown",
     author=oai_repo.__author__,
     author_email='repoteam@lib.msu.edu',
-    url='https://github.com/MSU-Libraries/oai-repo',
+    url='https://github.com/MSU-Libraries/oai_repo',
     classifiers=[
         'Intended Audience :: Developers',
         'Development Status :: 2 - Pre-Alpha',
