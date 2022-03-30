@@ -1,5 +1,5 @@
 # oai_repo
-The `oai_repo` Python module provides a configurable implementation of a
+The `oai_repo` Python module provides a configurable implementation of an
 [OAI-PMH](http://openarchives.org/OAI/openarchivesprotocol.html) compatible repository.
 
 At its simplest, using `oai_repo` involves:
@@ -14,8 +14,9 @@ repo = oai_repo.OAIRepository("/my/config.json")
 # Pass in URL arguments as a dict to be processed
 response = repo.process( { "verb": "Identify" } )
 print( type(response.root()) )  # lxml.etree.Element
-print( bytes(response) )        # Example output below
+print( bytes(response) )        # XML byte response
 ```
+Resulting in a complete OAI response:
 ```xml
 <?xml version="1.0" encoding="UTF-8"?>
 <OAI-PMH xmlns="http://www.openarchives.org/OAI/2.0/"
@@ -142,8 +143,8 @@ except oai_repo.OAIRepoInternalException as exc:
 ```
 
 ## Author and License
-The `oai_repo` module was developed by the Michigan State University Libraries.
+The `oai_repo` module was developed at the Michigan State University Libraries.
 It is released under the Apache License version 2.0.
 
 ## Copyright
-Copyright 2022 Michigan State University Board of Trustees
+Copyright (c) 2022 Michigan State University Board of Trustees
