@@ -3,8 +3,8 @@
     "baseURL": "https://d.lib.msu.edu/oai",
     "adminEmail": ["admin1@example.edu", "admin2@example.edu"],
     "earliestDatestamp": {
-        "url": "http://api.plos.org/search?q=id:%2210.1371/journal.pone.0132184%22&fl=publication_date",
-        "jsonpath": "$.response.docs[0].publication_date"
+        "url": "http://api.plos.org/search?q=id:%2210.1371/journal.pone.0132184%22&fl=publication_date&wt=xml",
+        "xpath": "/response/result/doc/date/text()"
     },
     "deletedRecord": "no",
     "granularity": "YYYY-MM-DDThh:mm:ssZ",
@@ -32,7 +32,7 @@
             "jsonpath": "$.response.docs[0].fedora_datastreams_ms"
         },
         "recordMetadata": {
-            "url": "https://sandhill.lib.msu.edu/$LOCAL_ID$/$MD_FIELD$/view"
+            "url": "https://example.edu/$LOCAL_ID$/$MD_FIELD$/view"
         }
     },
     "localId": {

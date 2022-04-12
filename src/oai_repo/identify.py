@@ -13,10 +13,6 @@ class IdentifyRequest(OAIRequest):
     raises:
         OAIErrorBadArgument
     """
-    # pylint: disable=useless-super-delegation
-    def __init__(self):
-        super().__init__()
-
     def post_parse(self):
         """Runs after args are parsed"""
 

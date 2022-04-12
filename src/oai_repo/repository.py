@@ -8,11 +8,14 @@ from .listidentifiers import ListIdentifiersRequest, ListIdentifiersResponse
 from .listmetadataformats import ListMetadataFormatsRequest, ListMetadataFormatsResponse
 from .listrecords import ListRecordsRequest, ListRecordsResponse
 from .listsets import ListSetsRequest, ListSetsResponse
-from .exceptions import OAIError, OAIErrorBadVerb, OAIErrorIdDoesNotExist
+from .exceptions import (
+    OAIError, OAIErrorBadVerb, OAIErrorIdDoesNotExist, OAIErrorCannotDisseminateFormat
+)
 from .error import OAIErrorResponse
 from .request import OAIRequest
 from .response import OAIResponse
 from .config import OAIConfig
+from .api import APIQueries
 
 class VerbClasses(NamedTuple):
     """Named access to verb classes"""
@@ -34,6 +37,7 @@ class OAIRepository:
     """
     def __init__(self, filepath: str = None):
         self.config = OAIConfig(filepath)
+        self.apiqueries = APIQueries(self)
 
     def process(self, request: dict|OAIRequest) -> OAIResponse:
         """
@@ -83,3 +87,17 @@ class OAIRepository:
                 if tftype == "replace":
                     local_id = local_id.replace(tfargs[1], tfargs[0])
         return local_id
+
+    def md_field(self, metadataprefix: str) -> str:
+        """Convert a metadataprefix into a local metadata field name"""
+        mdfield = None
+        for mdformat in self.config.metadataformats:
+            if metadataprefix == mdformat["metadataPrefix"]:
+                mdfield = mdformat["fieldValue"]
+                break
+        if not mdfield:
+            raise OAIErrorCannotDisseminateFormat(
+                "The requested metadataPrefix is not valid for "\
+                "either the given record or the repository."
+            )
+        return mdfield

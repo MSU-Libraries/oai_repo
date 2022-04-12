@@ -4,3 +4,4 @@ __pycache__
 build/
 dist/
 oai_repo.egg-info/
+.coverage

@@ -4,26 +4,52 @@ Implementation of GetRecord verb
 from lxml import etree
 from .request import OAIRequest
 from .response import OAIResponse
-
+from .exceptions import OAIErrorCannotDisseminateFormat
 
 class GetRecordRequest(OAIRequest):
     """
     Parse a request for the GetRecord verb
     raises:
         OAIErrorBadArgument
-        OAIErrorIdDoesNotExist
-        OAIErrorCannotDisseminateFormat
     """
     def __init__(self):
         super().__init__()
-        self.required_args = ["identifier", "metadataPrefix"]
+        self.required_args: list = ["identifier", "metadataPrefix"]
+        self.identifier: str = None
+        self.metadataprefix: str = None
 
     def post_parse(self):
         """Runs after args are parsed"""
+        self.identifier = self.args.get("identifier")
+        self.metadataprefix = self.args.get("metadataPrefix")
 
+    def __repr__(self):
+        return f"GetRecordRequest(identifier={self.identifier},"\
+               f"metadataprefix={self.metadataprefix})"
 
 class GetRecordResponse(OAIResponse):
-    """Generate a resposne for the GetRecord verb"""
+    """
+    Generate a resposne for the GetRecord verb
+    raises:
+        OAIErrorIdDoesNotExist
+        OAIErrorCannotDisseminateFormat
+    """
+    def __repr__(self):
+        return f"GetRecordResponse(identifier={self.request.identifier},"\
+               f"metadataprefix={self.request.metadataprefix})"
+
     def body(self) -> etree.Element:
         """Response body"""
-        return "TODO"
+        self.repository.apiqueries.assert_identifier(self.request.identifier)
+
+        metadataformats = self.repository.apiqueries.metadata_formats(self.request.identifier)
+        mdprefix = self.repository.md_field(self.request.metadataprefix)
+        if mdprefix not in metadataformats:
+            raise OAIErrorCannotDisseminateFormat(
+                "The requested metadataPrefix does not exist for the given identifier."
+            )
+
+        return self.repository.apiqueries.record_metadata(
+            self.request.identifier,
+            self.request.metadataprefix
+        )

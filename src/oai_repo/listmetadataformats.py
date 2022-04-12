@@ -4,8 +4,6 @@ Implementation of ListMetadataFormats verb
 from lxml import etree
 from .request import OAIRequest
 from .response import OAIResponse
-from .api import apicall_querypath
-from .exceptions import OAIErrorIdDoesNotExist, OAIErrorNoMetadataFormats
 
 
 class ListMetadataFormatsRequest(OAIRequest):
@@ -13,8 +11,6 @@ class ListMetadataFormatsRequest(OAIRequest):
     Parse a request for the ListMetadataFormats verb
     raises:
         OAIErrorBadArgument
-        OAIErrorIdDoesNotExist
-        OAIErrorNoMetadataFormats
     """
     def __init__(self):
         super().__init__()
@@ -27,7 +23,7 @@ class ListMetadataFormatsRequest(OAIRequest):
             self.identifier = self.args["identifier"]
 
     def __repr__(self):
-        return f"ListMetadataFormatsResponse(identifier={self.identifier})"
+        return f"ListMetadataFormatsRequest(identifier={self.identifier})"
 
 
 class ListMetadataFormatsResponse(OAIResponse):
@@ -49,24 +45,11 @@ class ListMetadataFormatsResponse(OAIResponse):
             for mdformat in self.repository.config.metadataformats:
                 self.add_format(xmlb, mdformat)
         else:
-            local_id = self.repository.local_id(self.request.identifier)
-            mdquery = self.repository.config.metadataformatsquery
-            # Check if identifier exists
-            idexists = mdquery["idExists"]
-            idexists["url"] = idexists["url"].replace("$LOCAL_ID$", local_id)
-            id_match = apicall_querypath(**idexists)
-            if not id_match:
-                raise OAIErrorIdDoesNotExist("The given identifier does not exist.")
+            self.repository.apiqueries.assert_identifier(self.request.identifier)
 
-            # Query to get list of formats
-            fieldvalues = mdquery["fieldValues"]
-            fieldvalues["url"] = fieldvalues["url"].replace("$LOCAL_ID$", local_id)
-            metadata_formats = apicall_querypath(**fieldvalues)
-            if not metadata_formats:
-                raise OAIErrorNoMetadataFormats("No metadata fomats found for given identifier.")
-
+            metadataformats = self.repository.apiqueries.metadata_formats(self.request.identifier)
             for mdformat in self.repository.config.metadataformats:
-                if mdformat["fieldValue"] not in metadata_formats:
+                if mdformat["fieldValue"] not in metadataformats:
                     continue
                 self.add_format(xmlb, mdformat)
         return xmlb
