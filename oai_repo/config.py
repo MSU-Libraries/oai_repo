@@ -25,7 +25,7 @@ class OAIConfig:
             "compression": [],
             "description": [],
             "localId": {},
-            "metadataFormatsQuery": {}
+            "apiQueries": {}
         }
         if self.filepath:
             self.load_file(self.filepath)

@@ -24,14 +24,17 @@
             "fieldValue": "MODS"
         }
     ],
-    "metadataFormatsQuery": {
+    "apiQueries": {
         "idExists": {
             "url": "https://sandhill.lib.msu.edu/search.json?q=PID:\"$LOCAL_ID$\"&fl=fedora_datastreams_ms",
             "jsonpath": "$.response.docs[0]"
         },
-        "fieldValues": {
+        "metadataFieldValues": {
             "url": "https://sandhill.lib.msu.edu/search.json?q=PID:\"$LOCAL_ID$\"&fl=fedora_datastreams_ms",
             "jsonpath": "$.response.docs[0].fedora_datastreams_ms"
+        },
+        "recordMetadata": {
+            "url": "https://sandhill.lib.msu.edu/$LOCAL_ID$/$MD_FIELD$/view"
         }
     },
     "localId": {

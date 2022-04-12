@@ -114,7 +114,7 @@ config_schema = {
             "type": "string"
         }
     },
-    "metadataFormatsQuery": {
+    "apiQueries": {
         "required": True,
         "type": "dict",
         "schema": {
@@ -123,10 +123,20 @@ config_schema = {
                 "type": "dict",
                 "oneof_schema": _url_query
             },
-            "fieldValues": {
+            "metadataFieldValues": {
                 "required": True,
                 "type": "dict",
                 "oneof_schema": _url_query
+            },
+            "recordMetadata": {
+                "required": True,
+                "type": "dict",
+                "schema": {
+                    "url": {
+                        "required": True,
+                        "type": "string",
+                    }
+                }
             }
         }
     },
