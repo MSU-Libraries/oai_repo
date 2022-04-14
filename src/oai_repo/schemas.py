@@ -36,15 +36,64 @@ _earliestdatestamp_schemas = [
 
 _transform_schemas = [
     {
-        "type": "list",
-        "items": [
-            {
-                "type": "string",
-                "allowed": ["replace"]
-            },
-            { "type": "string" },
-            { "type": "string" }
-        ]
+        "type": "dict",
+        "schema": {
+            "replace": {
+                "required": True,
+                "type": "list",
+                "items": [
+                    { "type": "string", "required": True },
+                    { "type": "string", "required": True }
+                ]
+            }
+        }
+    },
+    {
+        "type": "dict",
+        "schema": {
+            "prefix": {
+                "type": "list",
+                "items": [
+                    {
+                        "type": "string",
+                        "required": True,
+                        "allowed": ["add", "del"]
+                    },
+                    { "type": "string", "required": True }
+                ]
+            }
+        }
+    },
+    {
+        "type": "dict",
+        "schema": {
+            "suffix": {
+                "type": "list",
+                "items": [
+                    {
+                        "type": "string",
+                        "required": True,
+                        "allowed": ["add", "del"]
+                    },
+                    { "type": "string", "required": True }
+                ]
+            }
+        }
+    },
+    {
+        "type": "dict",
+        "schema": {
+            "case": {
+                "type": "list",
+                "items": [
+                    {
+                        "type": "string",
+                        "required": True,
+                        "allowed": ["upper", "lower"]
+                    }
+                ]
+            }
+        }
     }
 ]
 
@@ -80,10 +129,6 @@ config_schema = {
                     "type": "string"
                 },
                 "metadataNamespace": {
-                    "required": True,
-                    "type": "string"
-                },
-                "fieldValue": {
                     "required": True,
                     "type": "string"
                 },
@@ -137,21 +182,26 @@ config_schema = {
                         "type": "string",
                     }
                 }
-            }
+            },
+            "listSets": {
+                "type": "dict",
+                "oneof_schema": _url_query
+            },
         }
+    },
+    "localMetadataId": {
+        "required": True,
+        "type": "list",
+        "anyof_schema": _transform_schemas
     },
     "localId": {
         "required": True,
-        "type": "dict",
-        "schema": {
-            "identifierPrefix": {
-                "required": True,
-                "type": "string",
-            },
-            "transforms": {
-                "type": "list",
-                "oneof_schema": _transform_schemas,
-            }
-        }
+        "type": "list",
+        "anyof_schema": _transform_schemas
+    },
+    "setName": {
+        "required": True,
+        "type": "list",
+        "anyof_schema": _transform_schemas
     }
 }

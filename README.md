@@ -87,7 +87,10 @@ Fields in the config file are:
  * `metadataNamespace` _(String)_: The to be value placed in the `ListMetadataFormats` response.
  * `fieldValue` _(String)_: The value to be matched in `metadataFormatsQuery.fieldValues`. (An identifier is considered to have a metadata format when `fieldValue` is contained within the results of the `fieldValues` query.)
 
-`metadataFormatsQuery` _(Required, Dict)_: TODO
+`apiQueries` _(Required, Dict)_: TODO can use `$$`
+ * `idExists` _(URL/Path Pair)_: TODO can use `$$`
+ * `metadataFieldValues` _(URL/Path Pair)_: TODO can use `$$`
+ * `recordMetadata` _(URL)_: TODO can use `$$`
 
 `localId` _(Required, Dict)_: TODO
 

@@ -43,7 +43,7 @@ class GetRecordResponse(OAIResponse):
         self.repository.apiqueries.assert_identifier(self.request.identifier)
 
         metadataformats = self.repository.apiqueries.metadata_formats(self.request.identifier)
-        mdprefix = self.repository.md_field(self.request.metadataprefix)
+        mdprefix = self.repository.localmetadataid(self.request.metadataprefix)
         if mdprefix not in metadataformats:
             raise OAIErrorCannotDisseminateFormat(
                 "The requested metadataPrefix does not exist for the given identifier."

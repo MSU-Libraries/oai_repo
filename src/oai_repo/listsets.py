@@ -17,9 +17,12 @@ class ListSetsRequest(OAIRequest):
     def __init__(self):
         super().__init__()
         self.exclusive_arg = "resumptionToken"
+        self.resumption: str = None
 
     def post_parse(self):
         """Runs after args are parsed"""
+        if "resumptionToken" in self.args:
+            self.resumptiontoken = self.args["resumptionToken"]
 
 class ListSetsResponse(OAIResponse):
     """Generate a resposne for the ListSets verb"""

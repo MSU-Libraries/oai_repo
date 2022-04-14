@@ -33,8 +33,6 @@ class ListMetadataFormatsResponse(OAIResponse):
         OAIErrorIdDoesNotExist
         OAIErrorNoMetadataFormats
     """
-    VALID_ELEMENTS = ["metadataPrefix", "schema", "metadataNamespace"]
-
     def __repr__(self):
         return f"ListMetadataFormatsResponse(identifier={self.request.identifier})"
 
@@ -42,16 +40,16 @@ class ListMetadataFormatsResponse(OAIResponse):
         """Response body"""
         xmlb = etree.Element("ListMetadataFormats")
         if not self.request.identifier:
-            for mdformat in self.repository.config.metadataformats:
-                self.add_format(xmlb, mdformat)
+            for mdf in self.repository.config.metadataformats:
+                self.add_format(xmlb, mdf)
         else:
             self.repository.apiqueries.assert_identifier(self.request.identifier)
-
             metadataformats = self.repository.apiqueries.metadata_formats(self.request.identifier)
-            for mdformat in self.repository.config.metadataformats:
-                if mdformat["fieldValue"] not in metadataformats:
+            for mdf in self.repository.config.metadataformats:
+                localmetadataid = self.repository.localmetadataid(mdf["metadataPrefix"])
+                if localmetadataid not in metadataformats:
                     continue
-                self.add_format(xmlb, mdformat)
+                self.add_format(xmlb, mdf)
         return xmlb
 
     def add_format(self, xmlb: etree.Element, mdformat: dict):
@@ -60,7 +58,5 @@ class ListMetadataFormatsResponse(OAIResponse):
         """
         mdf_elem = etree.SubElement(xmlb, "metadataFormat")
         for mkey, mval in mdformat.items():
-            if mkey not in self.VALID_ELEMENTS:
-                continue
             elem = etree.SubElement(mdf_elem, mkey)
             elem.text = mval

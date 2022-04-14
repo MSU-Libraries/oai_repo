@@ -16,6 +16,7 @@ from .request import OAIRequest
 from .response import OAIResponse
 from .config import OAIConfig
 from .api import APIQueries
+from .transform import Transform
 
 class VerbClasses(NamedTuple):
     """Named access to verb classes"""
@@ -68,36 +69,19 @@ class OAIRepository:
         """Given a request, create an appropriate OAI response object"""
         return VERBS[request.verb].response(self, request)
 
-    def identifier(self, local_id: str) -> str:
+    def identifier(self, localid: str) -> str:
         """Convert from local id value to OAI identifier"""
-        if "transforms" in self.config.localid:
-            for tftype, *tfargs in self.config.localid["transforms"]:
-                if tftype == "replace":
-                    local_id = local_id.replace(tfargs[0], tfargs[1])
-        return self.config.localid["identifierPrefix"] + local_id
+        return Transform(self.config.localid).reverse(localid)
 
-    def local_id(self, identifier: str) -> str:
+    def localid(self, identifier: str) -> str:
         """Convert from OAI identifier to local id value"""
-        prefix = self.config.localid["identifierPrefix"]
-        if not identifier.startswith(prefix):
-            raise OAIErrorIdDoesNotExist("Identifier argument is invalid.")
-        local_id = identifier.removeprefix(prefix)
-        if "transforms" in self.config.localid:
-            for tftype, *tfargs in self.config.localid["transforms"]:
-                if tftype == "replace":
-                    local_id = local_id.replace(tfargs[1], tfargs[0])
-        return local_id
+        return Transform(self.config.localid).forward(identifier)
 
-    def md_field(self, metadataprefix: str) -> str:
-        """Convert a metadataprefix into a local metadata field name"""
-        mdfield = None
-        for mdformat in self.config.metadataformats:
-            if metadataprefix == mdformat["metadataPrefix"]:
-                mdfield = mdformat["fieldValue"]
-                break
-        if not mdfield:
+    def localmetadataid(self, metadataprefix: str) -> str:
+        """Convert a metadataprefix into a local metadata id value"""
+        if metadataprefix not in [mdf["metadataPrefix"] for mdf in self.config.metadataformats]:
             raise OAIErrorCannotDisseminateFormat(
                 "The requested metadataPrefix is not valid for "\
                 "either the given record or the repository."
             )
-        return mdfield
+        return Transform(self.config.localmetadataid).forward(metadataprefix)

@@ -102,13 +102,13 @@ class APIQueries:
         """
         Given an OAI identifier string, assert that the record exists
         args:
-            identifier (str)
+            identifier (str):
         raises:
             OAIErrorIdDoesNotExist when the identifier is invalid or does not exist
         """
-        local_id = self.repository.local_id(identifier)
+        localid = self.repository.localid(identifier)
         idexists = self.repository.config.apiqueries["idExists"]
-        idexists["url"] = idexists["url"].replace("$LOCAL_ID$", local_id)
+        idexists["url"] = idexists["url"].replace("$localId$", localid)
         id_match = apicall_querypath(**idexists)
         if not id_match:
             raise OAIErrorIdDoesNotExist("The given identifier does not exist.")
@@ -117,13 +117,13 @@ class APIQueries:
         """
         Given an OAI identifier string, return the list of valid metadata prefixes
         args:
-            identifier (str)
+            identifier (str):
         raises:
             OAIErrorIdDoesNotExist when the identifier does not have any valid metadata formats
         """
-        local_id = self.repository.local_id(identifier)
+        localid = self.repository.localid(identifier)
         metadataformats = self.repository.config.apiqueries["metadataFieldValues"]
-        metadataformats["url"] = metadataformats["url"].replace("$LOCAL_ID$", local_id)
+        metadataformats["url"] = metadataformats["url"].replace("$localId$", localid)
         formats_found = apicall_querypath(**metadataformats)
         if not formats_found:
             raise OAIErrorNoMetadataFormats("No metadata fomats found for given identifier.")
@@ -134,15 +134,29 @@ class APIQueries:
         Given both an OAI identifier and metadata prefix, return the loaded root XML element
         of the API response.
         args:
-            identifer (str)
-            metadataprefix (str)
+            identifer (str):
+            metadataprefix (str):
         raises:
             OAIErrorCannotDisseminateFormat
         """
-        local_id = self.repository.local_id(identifier)
-        md_field = self.repository.md_field(metadataprefix)
+        localid = self.repository.localid(identifier)
+        localmetadataid = self.repository.localmetadataid(metadataprefix)
         recordmetadata = self.repository.config.apiqueries["recordMetadata"]
         recordmetadata["url"] = recordmetadata["url"]\
-            .replace("$LOCAL_ID$", local_id)\
-            .replace("$MD_FIELD$", md_field)
+            .replace("$localId$", localid)\
+            .replace("$localMetadataId$", localmetadataid)
         return apicall_getxml(**recordmetadata)
+
+    def list_sets(self, resuptiontoken=None):
+        """
+        TODO
+        args:
+            resuptiontoken (str):
+        raises:
+            OAIErrorBadResumptionToken
+            OAIErrorNoSetHierarchy
+        """
+        if "listSets" not in self.repository.config.apiqueries:
+            raise OAIErrorNoSetHierarchy("This repository does not support sets.")
+
+        # TODO

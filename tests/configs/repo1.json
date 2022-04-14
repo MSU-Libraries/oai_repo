@@ -14,33 +14,37 @@
         {
             "metadataPrefix": "oai_dc",
             "schema": "http://www.openarchives.org/OAI/2.0/oai_dc.xsd",
-            "metadataNamespace": "http://www.openarchives.org/OAI/2.0/oai_dc/",
-            "fieldValue": "DC"
+            "metadataNamespace": "http://www.openarchives.org/OAI/2.0/oai_dc/"
         },
         {
             "metadataPrefix": "mods",
             "schema": "http://www.loc.gov/standards/mods/v3/mods-3-4.xsd",
-            "metadataNamespace": "http://www.loc.gov/mods/v3",
-            "fieldValue": "MODS"
+            "metadataNamespace": "http://www.loc.gov/mods/v3"
         }
     ],
     "apiQueries": {
         "idExists": {
-            "url": "https://sandhill.lib.msu.edu/search.json?q=PID:\"$LOCAL_ID$\"&fl=fedora_datastreams_ms",
+            "url": "https://sandhill.lib.msu.edu/search.json?q=PID:\"$localId$\"&fl=fedora_datastreams_ms",
             "jsonpath": "$.response.docs[0]"
         },
         "metadataFieldValues": {
-            "url": "https://sandhill.lib.msu.edu/search.json?q=PID:\"$LOCAL_ID$\"&fl=fedora_datastreams_ms",
+            "url": "https://sandhill.lib.msu.edu/search.json?q=PID:\"$localId$\"&fl=fedora_datastreams_ms",
             "jsonpath": "$.response.docs[0].fedora_datastreams_ms"
         },
         "recordMetadata": {
-            "url": "https://sandhill.lib.msu.edu/$LOCAL_ID$/$MD_FIELD$/view"
+            "url": "https://example.edu/$localId$/$localMetadataId$/view"
         }
     },
-    "localId": {
-        "identifierPrefix": "oai:my.example.edu:",
-        "transforms": [
-            ["replace", ":", "_"]
-        ]
-    }
+    "localMetadataId": [
+        { "prefix": ["del", "oai_"] },
+        { "case": ["upper"] }
+    ],
+    "localId": [
+        { "prefix": ["del", "oai:my.example.edu:"] },
+        { "replace": ["_", ":"] }
+    ],
+    "setName": [
+        { "prefix": ["del", "info:fedora/"] },
+        { "suffix": ["del", ":root"] }
+    ]
 }

@@ -12,33 +12,41 @@
         {
             "metadataPrefix": "oai_dc",
             "schema": "http://www.openarchives.org/OAI/2.0/oai_dc.xsd",
-            "metadataNamespace": "http://www.openarchives.org/OAI/2.0/oai_dc/",
-            "fieldValue": "DC"
+            "metadataNamespace": "http://www.openarchives.org/OAI/2.0/oai_dc/"
         },
         {
             "metadataPrefix": "mods",
             "schema": "http://www.loc.gov/standards/mods/v3/mods-3-4.xsd",
-            "metadataNamespace": "http://www.loc.gov/mods/v3",
-            "fieldValue": "MODS"
+            "metadataNamespace": "http://www.loc.gov/mods/v3"
         }
     ],
     "apiQueries": {
         "idExists": {
-            "url": "https://sandhill.lib.msu.edu/search.json?q=PID:\"$LOCAL_ID$\"&fl=fedora_datastreams_ms",
+            "url": "https://sandhill.lib.msu.edu/search.json?q=PID:\"$localId$\"&fl=fedora_datastreams_ms",
             "jsonpath": "$.response.docs[0]"
         },
         "metadataFieldValues": {
-            "url": "https://sandhill.lib.msu.edu/search.json?q=PID:\"$LOCAL_ID$\"&fl=fedora_datastreams_ms",
+            "url": "https://sandhill.lib.msu.edu/search.json?q=PID:\"$localId$\"&fl=fedora_datastreams_ms",
             "jsonpath": "$.response.docs[0].fedora_datastreams_ms"
         },
         "recordMetadata": {
-            "url": "https://sandhill.lib.msu.edu/$LOCAL_ID$/$MD_FIELD$/view"
+            "url": "https://sandhill.lib.msu.edu/$localId$/$localMetadataId$/view"
+        },
+        "listSets": {
+            "url": "https://sandhill-1.devel.lib.msu.edu/search.json?q=!PID:*\\:root&fl=collection_hierarchy&rows=0&json.facet={ categories: { type: terms, field: collection_hierarchy, limit: 99999, sort: { index: asc } } }&facet=false",
+            "jsonpath": "$.facets.categories.buckets[*].val"
         }
     },
-    "localId": {
-        "identifierPrefix": "oai:d.lib.msu.edu:",
-        "transforms": [
-            ["replace", ":", "_"]
-        ]
-    }
+    "localMetadataId": [
+        { "prefix": ["del", "oai_"] },
+        { "case": ["upper"] }
+    ],
+    "localId": [
+        { "prefix": ["del", "oai:d.lib.msu.edu:"] },
+        { "replace": ["_", ":"] }
+    ],
+    "setName": [
+        { "prefix": ["del", "info:fedora/"] },
+        { "suffix": ["del", ":root"] }
+    ]
 }

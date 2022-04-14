@@ -82,9 +82,11 @@ def test_OAIRepository_identifier():
     repo = oai_repo.OAIRepository("tests/configs/repo1.json")
     assert repo.identifier("abc:123") == "oai:my.example.edu:abc_123"
 
-def test_OAIRepository_local_id():
+def test_OAIRepository_localid():
     repo = oai_repo.OAIRepository("tests/configs/repo1.json")
-    assert repo.local_id("oai:my.example.edu:abc_123") == "abc:123"
+    assert repo.localid("oai:my.example.edu:abc_123") == "abc:123"
 
-    with pytest.raises(OAIErrorIdDoesNotExist):
-        repo.local_id("oai:badprefix.edu:abc_123")
+def test_OAIRepository_localmetadataid():
+    repo = oai_repo.OAIRepository("tests/configs/repo1.json")
+    assert repo.localmetadataid("oai_dc") == "DC"
+    assert repo.localmetadataid("mods") == "MODS"
