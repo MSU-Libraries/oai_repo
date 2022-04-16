@@ -6,6 +6,12 @@ from .request import OAIRequest
 from .response import OAIResponse
 from .exceptions import OAIErrorCannotDisseminateFormat
 
+
+class RecordHeaderValidator:
+    """
+    """
+
+
 class GetRecordRequest(OAIRequest):
     """
     Parse a request for the GetRecord verb
@@ -49,6 +55,11 @@ class GetRecordResponse(OAIResponse):
                 "The requested metadataPrefix does not exist for the given identifier."
             )
 
+        # TODO also needs OAI record <header> section
+
+        # TODO optional <about> section (only when repo supports deletion)
+
+        # TODO record metadata needs to be wrapped in <metadata> tag
         return self.repository.apiqueries.record_metadata(
             self.request.identifier,
             self.request.metadataprefix

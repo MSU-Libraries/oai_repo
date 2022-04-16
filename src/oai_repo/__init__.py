@@ -14,3 +14,4 @@ from .getrecord import GetRecordRequest, GetRecordResponse
 from .listidentifiers import ListIdentifiersRequest, ListIdentifiersResponse
 from .listrecords import ListRecordsRequest, ListRecordsResponse
 from .listsets import ListSetsRequest, ListSetsResponse
+from .interface import OAIInterface, Identify, MetadataFormat, RecordHeader, OAISet

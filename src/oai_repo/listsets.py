@@ -6,6 +6,11 @@ from .request import OAIRequest
 from .response import OAIResponse
 
 
+class OAISetValidator:
+    """
+    """
+
+
 class ListSetsRequest(OAIRequest):
     """
     Parse a request for the ListSets verb
@@ -17,7 +22,7 @@ class ListSetsRequest(OAIRequest):
     def __init__(self):
         super().__init__()
         self.exclusive_arg = "resumptionToken"
-        self.resumption: str = None
+        self.resumptiontoken: str = None
 
     def post_parse(self):
         """Runs after args are parsed"""
@@ -28,4 +33,12 @@ class ListSetsResponse(OAIResponse):
     """Generate a resposne for the ListSets verb"""
     def body(self) -> etree.Element:
         """Response body"""
-        return "TODO"
+        #TODO alternate ideas: class implemented and registerd externally?
+
+        setspecs = self.repository.apiqueries.list_sets(self.resuptiontoken)
+        xmlb = etree.Element("ListSets")
+        for setspec in setspecs:
+            xset = etree.SubElement(xmlb, "set")
+            xsetspec = etree.SubElement(xset, "setSpec")
+            xsetspec.text = setspec
+        return xmlb

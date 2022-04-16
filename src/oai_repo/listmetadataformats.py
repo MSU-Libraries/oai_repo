@@ -6,6 +6,11 @@ from .request import OAIRequest
 from .response import OAIResponse
 
 
+class MetadataFormatValidator:
+    """
+    """
+
+
 class ListMetadataFormatsRequest(OAIRequest):
     """
     Parse a request for the ListMetadataFormats verb
