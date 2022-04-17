@@ -14,8 +14,8 @@ from .exceptions import (
 from .error import OAIErrorResponse
 from .request import OAIRequest
 from .response import OAIResponse
-from .config import OAIConfig
-from .api import APIQueries
+from .interface import DataInterface
+
 from .transform import Transform
 
 class VerbClasses(NamedTuple):
@@ -36,17 +36,15 @@ class OAIRepository:
     """
     The primary OAI repository class which loads the config and handles OAI requests
     """
-    def __init__(self, filepath: str = None):
-        self.config = OAIConfig(filepath)
-        self.apiqueries = APIQueries(self)
+    def __init__(self, data: DataInterface):
+        self.data = data
 
-    def process(self, request: dict|OAIRequest) -> OAIResponse:
+    def process(self, request: dict) -> OAIResponse:
         """
         Given a request, route to appropriate action and return a response
         """
         try:
-            if isinstance(request, dict):
-                request = self.create_request(request)
+            request = self.create_request(request)
             response = self.create_response(request)
         except OAIError as exc:
             response = OAIErrorResponse(self, exc)
@@ -85,3 +83,7 @@ class OAIRepository:
                 "either the given record or the repository."
             )
         return Transform(self.config.localmetadataid).forward(metadataprefix)
+
+    def setname(self, localsetname: str) -> str:
+        """Convert a local setname into an OAI setname value"""
+        return Transform(self.config.localsetname).forward(localsetname)

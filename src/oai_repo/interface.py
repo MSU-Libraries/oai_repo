@@ -49,7 +49,7 @@ class RecordHeader(RecordHeaderValidator):
     #TODO
 
 @dataclass
-class OAISet(OAISetValidator):
+class Set(OAISetValidator):
     """
     Class to define fields for an OAI set. Your definition of the
     OAIInterface.get_metadata_formats() method should return a list of these.
@@ -60,13 +60,13 @@ class OAISet(OAISetValidator):
     """A list of lxml.etree.Elements to populate `<setDescription>` tags for the set."""
 
 
-class OAIInterface:
+class DataInterface:
     """
-    Class in which all required OAI metadata queries must be implemented.
+    Class in which all required OAI data retrieval actions must be implemented.
     The instantiated instance of this class is then passed to the
     OAI repository.
     """
-    def get_identify_instance(self) -> Identify:
+    def get_identify(self) -> Identify:
         """
         Create and return an instantiated Identify object.
         Returns:
@@ -162,13 +162,13 @@ class OAIInterface:
         """
         raise NotImplementedError
 
-    def get_set(self, setspec: str) -> OAISet:
+    def get_set(self, setspec: str) -> Set:
         """
         Retrn an instatiated OAI Set object for the provided setSpect string.
         Args:
             setspec (str): a setSpec string
         Returns:
-            The OAISet object with all properties set appropriately,
+            The Set object with all properties set appropriately,
             or None if the setspec is not valid or does not exist.
         """
         raise NotImplementedError

@@ -8,6 +8,7 @@ import validators
 from .request import OAIRequest
 from .response import OAIResponse
 from .api import apicall_querypath
+from .helpers import bytes_to_xml
 
 class IdentifyValidator:
     """Validator for the Identify class"""
@@ -82,14 +83,10 @@ class IdentifyValidator:
         """Return a list of description failures"""
         failures = []
         for idx, desc in enumerate(self.description):
-            if not isinstance(desc, etree._Element):
-                if isinstance(desc, BytesIO):
-                    desc.seek(0)
-                    desc = desc.read()
-                try:
-                    etree.fromstring(desc)
-                except etree.XMLSyntaxError:
-                    failures.append(f"description {idx} is not valid XML")
+            try:
+                bytes_to_xml(desc)
+            except etree.XMLSyntaxError as exc:
+                failures.append(f"description {idx} is not valid XML: {exc}")
         return failures
 
 
@@ -110,49 +107,35 @@ class IdentifyResponse(OAIResponse):
 
     def body(self):
         """Response body"""
+        identify = self.repository.data.get_identify()
         xmlb = etree.Element("Identify")
         repository_name = etree.SubElement(xmlb, "repositoryName")
-        repository_name.text = self.repository.config.repositoryname
+        repository_name.text = identify.repository_name
         baseurl = etree.SubElement(xmlb, "baseUrl")
-        baseurl.text = self.repository.config.baseurl
+        baseurl.text = identify.base_url
         protocol_version = etree.SubElement(xmlb, "protocolVersion")
-        protocol_version.text = "2.0"
-        for email in self.repository.config.adminemail:
+        protocol_version.text = identify.protocol_version
+        for email in identify.admin_email:
             adminemail = etree.SubElement(xmlb, "adminEmail")
             adminemail.text = email
         deletedrecord = etree.SubElement(xmlb, "deletedRecord")
-        deletedrecord.text = self.repository.config.deletedrecord
+        deletedrecord.text = identify.deleted_record
         granularity = etree.SubElement(xmlb, "granularity")
-        granularity.text = self.repository.config.granularity
-        for compress_type in self.repository.config.compression:
+        granularity.text = identify.granularity
+        for compress_type in identify.compression:
             compression = etree.SubElement(xmlb, "compression")
             compression.text = compress_type
-        self.add_earliest_datestamp_element(xmlb)
-        self.add_description_elements(xmlb)
-        return xmlb
-
-    def add_earliest_datestamp_element(self, xmlb: etree.Element):
-        """
-        Add the earliestDatestamp field to the xml element based on config settings
-        Raises:
-            OAIRepoInternalError on API call or parse failure
-        """
-        edconfig = self.repository.config.earliestdatestamp
+        granularity = etree.SubElement(xmlb, "granularity")
+        granularity.text = identify.granularity
+        edvalue = identify.earliest_datestamp
+        if not isinstance(edvalue, str):
+            if granularity == "YYYY-MM-DD":
+                edvalue = edvalue.strftime("%Y-%m-%d")
+            else:
+                edvalue = edvalue.strftime("%Y-%m-%dT%H:%M:%SZ")
         earliestdatestamp = etree.SubElement(xmlb, "earliestDatestamp")
-        if "static" in edconfig:
-            earliestdatestamp.text = edconfig["static"]
-        else:
-            earliestdatestamp.text = apicall_querypath(**edconfig)
-
-    def add_description_elements(self, xmlb: etree.Element):
-        """
-        Load XML files from config settings and add them as description elements to the xml element
-        Raises:
-            OAIRepoInternalError on failure
-        """
-        for desc_filepath in self.repository.config.description:
-            desc_root = etree.parse(desc_filepath)
-            for child_elem in desc_root.getroot():
-                desc_element = etree.SubElement(xmlb, "description")
-                desc_element.append(child_elem)
-        # TODO catch xml errors
+        earliestdatestamp.text = edvalue
+        for desc in identify.description:
+            desc_elem = etree.SubElement(xmlb, "description")
+            desc_elem.append(bytes_to_xml(desc))
+        return xmlb

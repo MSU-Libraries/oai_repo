@@ -34,7 +34,6 @@ class OAIRequest:
             OAIErrorBadArgument
         """
         self.args = args
-
         if not self.allowed_args and len(self.args) > 0:
             raise OAIErrorBadArgument(
                 f"Verb {self.verb} does not allow other arguments."

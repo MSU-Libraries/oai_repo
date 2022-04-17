@@ -1,8 +1,27 @@
 """
 Helper functions
 """
+from io import BytesIO
 import jsonpath_ng
 from lxml import etree
+
+def bytes_to_xml(bdata: bytes|BytesIO) -> etree._Element:
+    """
+    Given a bytes or BytesIO, parse and return an lxml.etree._Element.
+    If passed an lxml.etree._Element, then will return it unchanged.
+    Args:
+        bdata (bytes|BytesIO): The bytes data to parse
+    Returns:
+        The loaded XML element.
+    Raises:
+        etree.XMLSyntaxError: On XML parse error
+    """
+    if not isinstance(bdata, etree._Element):
+        if isinstance(bdata, BytesIO):
+            bdata.seek(0)
+            bdata = bdata.read()
+        bdata = etree.fromstring(bdata)
+    return bdata
 
 def jsonpath_find_first(data: dict|list, path: str):
     """
