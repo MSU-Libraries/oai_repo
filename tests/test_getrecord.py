@@ -6,10 +6,15 @@ from oai_repo.exceptions import (
     OAIErrorCannotDisseminateFormat,
     OAIRepoExternalException,
 )
+from .data1 import GoodData
 
 def test_GetRecord():
+    repo = oai_repo.OAIRepository(GoodData())
+    # TODO TEMP just testing setspec
+    x = repo.data.list_set_specs()
+    print(f"setSpecs: {x}")
+
     # No arguments
-    repo = oai_repo.OAIRepository("tests/configs/repo2.json")
     request = { 'verb': 'GetRecord' }
     with pytest.raises(OAIErrorBadArgument):
         req = repo.create_request(request)

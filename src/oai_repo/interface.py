@@ -98,7 +98,7 @@ class DataInterface:
 
     def get_record_header(self, identifier: str) -> RecordHeader:
         """
-        TODO
+        Return a RecordHeader instance for the identifier.
         Args:
             identifier (str): A valid identifier string
         Returns:
@@ -123,7 +123,7 @@ class DataInterface:
 
     def get_record_abouts(self, identifier: str) -> list[lxml.etree._Element]:
         """
-        TODO
+        Return a list of XML elements which will populate the `<about>` tags in GetRecord responses.
         Args:
             identifier (str): A valid identifier string
         Returns:
@@ -142,7 +142,7 @@ class DataInterface:
             cursor (int): position in results to start from
             limit (int): maximum number of results to return, starting from cursor position
         Returns:
-            A tuple of length 3.
+            A tuple of length 3:
              1. A list of setSpec strings or None if the repository does not support sets.
              2. A `cursor` (int) to send with a `resumptionToken`,
                 or -1 if no `cursor` should be sent,
@@ -153,7 +153,7 @@ class DataInterface:
 
     def get_set(self, setspec: str) -> Set:
         """
-        Retrn an instatiated OAI Set object for the provided setSpect string.
+        Return an instatiated OAI Set object for the provided setSpect string.
         Args:
             setspec (str): a setSpec string
         Returns:
@@ -171,12 +171,12 @@ class DataInterface:
         limit: int = 100
     ) -> list:
         """
-        TODO
+        Return valid identifier strings, filtered appropriately to passed parameters.
         Args:
-            metadataprefix (str):
-            filter_from (datetime.datetime):
-            filter_until (datetime.datetime):
-            filter_set (str):
+            metadataprefix (str): The metadata prefix to match.
+            filter_from (datetime.datetime): Include only identifiers on or after given datetime.
+            filter_until (datetime.datetime): Include only identifiers on or before given datetime.
+            filter_set (str): Include only identifers within the matching setSpec string.
             cursor (int): position in results to start retrieving from
             limit (int): maximum number of results to return, starting from cursor position
         Returns:
