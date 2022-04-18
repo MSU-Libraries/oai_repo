@@ -108,6 +108,11 @@ class IdentifyResponse(OAIResponse):
     def body(self):
         """Response body"""
         identify = self.repository.data.get_identify()
+        errors = identify.errors()
+        if errors:
+            raise OAIRepoInternalException("Invalid Identify instance: {errors}")
+
+        # Assemble the XML body
         xmlb = etree.Element("Identify")
         repository_name = etree.SubElement(xmlb, "repositoryName")
         repository_name.text = identify.repository_name

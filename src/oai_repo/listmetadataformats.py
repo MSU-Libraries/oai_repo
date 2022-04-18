@@ -1,14 +1,46 @@
 """
 Implementation of ListMetadataFormats verb
 """
+import re
+import validators
 from lxml import etree
 from .request import OAIRequest
 from .response import OAIResponse
+from .exceptions import (
+    OAIErrorIdDoesNotExist,
+    OAIErrorNoMetadataFormats,
+    OAIRepoInternalException
+)
 
 
 class MetadataFormatValidator:
-    """
-    """
+    """Validator for the MetadataFormat class"""
+    def errors(self):
+        """
+        Verify fields are valid and present where required. Returning a list of descriptive
+        errors if any issues were found.
+        """
+        failures = []
+        failures.extend(self._metadata_prefix_failures())
+        failures.extend(self._schema_failures())
+        failures.extend(self._metadata_namespace_failures())
+        return failures
+
+    def _metadata_prefix_failures(self):
+        """Return a list of metadata_prefix failures"""
+        pattern = re.compile(r"^[A-Za-z0-9-_.!~*'\(\)]+$")
+        return [] if pattern.search(self.metadata_prefix) is not None else \
+            ["metadata_prefix contains invalid character(s); allowed chars: A-Za-z0-9-_.!~*'()"]
+
+    def _schema_failures(self):
+        """Return a list of schema failures"""
+        return ["schema must be a valid URL"] \
+            if not validators.url(self.schema) else []
+
+    def _metadata_namespace_failures(self):
+        """Return a list of _metadata_namespace failures"""
+        return ["metadata_namespace must be a valid URL"] \
+            if not validators.url(self.metadata_namespace) else []
 
 
 class ListMetadataFormatsRequest(OAIRequest):
@@ -43,18 +75,21 @@ class ListMetadataFormatsResponse(OAIResponse):
 
     def body(self) -> etree.Element:
         """Response body"""
+        identifier = self.request.identifier
+        if identifier and not self.repository.data.is_valid_identifier(identifier):
+            raise OAIErrorIdDoesNotExist("The given identifier does not exist.")
+
+        mdformats = self.repository.data.get_metadata_formats(identifier)
+        if not mdformats:
+            raise OAIErrorNoMetadataFormats("No metadata fomats found for given identifier.")
+
         xmlb = etree.Element("ListMetadataFormats")
-        if not self.request.identifier:
-            for mdf in self.repository.config.metadataformats:
-                self.add_format(xmlb, mdf)
-        else:
-            self.repository.apiqueries.assert_identifier(self.request.identifier)
-            metadataformats = self.repository.apiqueries.metadata_formats(self.request.identifier)
-            for mdf in self.repository.config.metadataformats:
-                localmetadataid = self.repository.localmetadataid(mdf["metadataPrefix"])
-                if localmetadataid not in metadataformats:
-                    continue
-                self.add_format(xmlb, mdf)
+        for mdformat in mdformats:
+            # Report errors if any MetadataFormat object were invalid
+            errors = mdformat.errors()
+            if errors:
+                raise OAIRepoInternalException(f"Invalid MetadataFormat instance: {errors}")
+            self.add_format(xmlb, mdformat)
         return xmlb
 
     def add_format(self, xmlb: etree.Element, mdformat: dict):
@@ -62,6 +97,9 @@ class ListMetadataFormatsResponse(OAIResponse):
         Add the given metadta format to the provided xml element
         """
         mdf_elem = etree.SubElement(xmlb, "metadataFormat")
-        for mkey, mval in mdformat.items():
-            elem = etree.SubElement(mdf_elem, mkey)
-            elem.text = mval
+        elem = etree.SubElement(mdf_elem, "metadataPrefix")
+        elem.text = mdformat.metadata_prefix
+        elem = etree.SubElement(mdf_elem, "schema")
+        elem.text = mdformat.schema
+        elem = etree.SubElement(mdf_elem, "metadataNamespace")
+        elem.text = mdformat.metadata_namespace

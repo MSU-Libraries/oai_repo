@@ -28,7 +28,6 @@ class Identify(IdentifyValidator):
     description: list[BytesIO|bytes|lxml.etree._Element] = field(default_factory=list)
     """description: can be bytes data or a pre-loaded lxml Element"""
 
-
 @dataclass
 class MetadataFormat(MetadataFormatValidator):
     """
@@ -38,7 +37,6 @@ class MetadataFormat(MetadataFormatValidator):
     metadata_prefix: str = None
     schema: str = None
     metadata_namespace: str = None
-
 
 @dataclass
 class RecordHeader(RecordHeaderValidator):
@@ -84,26 +82,17 @@ class DataInterface:
         """
         raise NotImplementedError
 
-    def list_metadata_prefixes(self, identifier: str|None = None) -> list[str]:
+    def get_metadata_formats(self, identifier: str|None = None) -> list[MetadataFormat]:
         """
         Return a list of metadata prefixes for the identifier. If no identifier
         identifieris passed, then list must contain all possible prefixes for the repository.
         Args:
             identifier (str|None): An identifer string
         Returns:
-            A list of metadata prefixes for the passed identifier.
-            A list of metadata prefixes for the entire reposiory if passed identifer was None.
-            An empty list if no prefixes found or identifier did not exist.
-        """
-        raise NotImplementedError
-
-    def get_metadata_format(self, metadata_prefix: str) -> MetadataFormat:
-        """
-        TODO
-        Args:
-            metadata_prefix (str):
-        Returns:
-            An instantiated MetadataFormat with all properties set appropriately.
+            A list of instantiated MetadataFormat objects with all properties set appropriately
+            to the identifer.
+            If identifier is None, then list of all possible MetadataFormat objects for the
+            entire repository.
         """
         raise NotImplementedError
 
