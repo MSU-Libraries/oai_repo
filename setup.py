@@ -1,14 +1,13 @@
 # coding: utf-8
 import os
 import setuptools
-import oai_repo
+from src import oai_repo
 
 with open(os.path.join(os.path.dirname(__file__), 'README.md'), "r") as fh:
     readme = fh.read()
 
 setuptools.setup(
     name='oai_repo',
-    packages=['oai_repo'],
     version=oai_repo.__version__,
     license='Apache License 2.0',
     description='OAI-PMH Repository Server',
@@ -32,5 +31,6 @@ setuptools.setup(
         "jsonpath-ng >= 1.5",
         "lxml >= 4.7",
         "requests >= 2.27",
+        "validators >= 0.18",
     ]
 )
