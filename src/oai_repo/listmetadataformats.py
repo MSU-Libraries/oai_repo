@@ -38,7 +38,7 @@ class MetadataFormatValidator:
             if not validators.url(self.schema) else []
 
     def _metadata_namespace_failures(self):
-        """Return a list of _metadata_namespace failures"""
+        """Return a list of metadata_namespace failures"""
         return ["metadata_namespace must be a valid URL"] \
             if not validators.url(self.metadata_namespace) else []
 

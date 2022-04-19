@@ -8,7 +8,7 @@ import lxml
 from .identify import IdentifyValidator
 from .listmetadataformats import MetadataFormatValidator
 from .getrecord import RecordHeaderValidator
-from .listsets import OAISetValidator
+from .listsets import SetValidator
 
 
 @dataclass
@@ -44,10 +44,13 @@ class RecordHeader(RecordHeaderValidator):
     Class to define a record header for an identifier. Your definition of the
     OAIInterface.get_record_header() method should one of these.
     """
-    #TODO
+    identifier: str = None
+    datestamp: str|datetime = None
+    setspecs: list[str] = field(default_factory=list)
+    status: str = None
 
 @dataclass
-class Set(OAISetValidator):
+class Set(SetValidator):
     """
     Class to define fields for an OAI set. Your definition of the
     OAIInterface.get_metadata_formats() method should return a list of these.

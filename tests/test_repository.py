@@ -1,22 +1,20 @@
 import pytest
 import oai_repo
+from oai_repo.identify import IdentifyResponse
+from oai_repo.listmetadataformats import ListMetadataFormatsResponse
+from oai_repo.error import OAIErrorResponse
 from oai_repo.exceptions import OAIErrorIdDoesNotExist
-from oai_repo.response import nsref
-
-def test_nsref():
-    attr1 = "xsi"
-    assert nsref(None) == b"{http://www.openarchives.org/OAI/2.0/}"
-
+from .data1 import GoodData
 
 def test_OAIRepository_process():
-    repo = oai_repo.OAIRepository("tests/configs/repo1.json")
+    repo = oai_repo.OAIRepository(GoodData())
 
     # Valid verb gets correct response class
     request = {
         'verb': 'Identify'
     }
     response = repo.process(request)
-    assert isinstance(response, oai_repo.IdentifyResponse)
+    assert isinstance(response, IdentifyResponse)
     assert response
 
     # Invalid verb gets OAIErrorResponse
@@ -24,7 +22,7 @@ def test_OAIRepository_process():
         'verb': 'NotAVerb'
     }
     response = repo.process(request)
-    assert isinstance(response, oai_repo.OAIErrorResponse)
+    assert isinstance(response, OAIErrorResponse)
     assert not response
     assert b"badVerb" in bytes(response)
     assert b"The value of the 'verb' argument in the request is not legal." in bytes(response)
@@ -35,7 +33,7 @@ def test_OAIRepository_process():
         'unexpected': 'arg'
     }
     response = repo.process(request)
-    assert isinstance(response, oai_repo.OAIErrorResponse)
+    assert isinstance(response, OAIErrorResponse)
     assert b"badArgument" in bytes(response)
     assert b"Verb Identify does not allow other arguments." in bytes(response)
 
@@ -44,7 +42,7 @@ def test_OAIRepository_process():
         'verb': 'GetRecord'
     }
     response = repo.process(request)
-    assert isinstance(response, oai_repo.OAIErrorResponse)
+    assert isinstance(response, OAIErrorResponse)
     assert b"badArgument" in bytes(response)
 
     # Exclusive argument passed with additional arguments
@@ -54,17 +52,17 @@ def test_OAIRepository_process():
         'set': 'my-set'
     }
     response = repo.process(request)
-    assert isinstance(response, oai_repo.OAIErrorResponse)
+    assert isinstance(response, OAIErrorResponse)
     assert b"badArgument" in bytes(response)
 
     # ListMetadataFormats accepts identifier arg
-    repo = oai_repo.OAIRepository("tests/configs/repo3.json")
+    repo = oai_repo.OAIRepository(GoodData())
     request = {
         'verb': 'ListMetadataFormats',
         'identifier': 'oai:d.lib.msu.edu:etd_1000'
     }
     response = repo.process(request)
-    assert isinstance(response, oai_repo.ListMetadataFormatsResponse)
+    assert isinstance(response, ListMetadataFormatsResponse)
     assert b'identifier="oai:d.lib.msu.edu:etd_1000"' in bytes(response)
     assert b'<metadataPrefix>mods</metadataPrefix>' in bytes(response)
     assert b'<metadataPrefix>oai_dc</metadataPrefix>' in bytes(response)
@@ -75,18 +73,5 @@ def test_OAIRepository_process():
         'identifier': 'oai:d.lib.msu.edu:fakeID'
     }
     response = repo.process(request)
-    assert isinstance(response, oai_repo.OAIErrorResponse)
+    assert isinstance(response, OAIErrorResponse)
     assert b"idDoesNotExist" in bytes(response)
-
-def test_OAIRepository_identifier():
-    repo = oai_repo.OAIRepository("tests/configs/repo1.json")
-    assert repo.identifier("abc:123") == "oai:my.example.edu:abc_123"
-
-def test_OAIRepository_localid():
-    repo = oai_repo.OAIRepository("tests/configs/repo1.json")
-    assert repo.localid("oai:my.example.edu:abc_123") == "abc:123"
-
-def test_OAIRepository_localmetadataid():
-    repo = oai_repo.OAIRepository("tests/configs/repo1.json")
-    assert repo.localmetadataid("oai_dc") == "DC"
-    assert repo.localmetadataid("mods") == "MODS"

@@ -10,9 +10,6 @@ from .data1 import GoodData
 
 def test_GetRecord():
     repo = oai_repo.OAIRepository(GoodData())
-    # TODO TEMP just testing setspec
-    x = repo.data.list_set_specs()
-    print(f"setSpecs: {x}")
 
     # No arguments
     request = { 'verb': 'GetRecord' }
@@ -22,13 +19,16 @@ def test_GetRecord():
     # Valid identifier with oai_dc prefix
     request = {
         'verb': 'GetRecord',
-        'identifier': 'oai:d.lib.msu.edu:etd_1001',
+        'identifier': 'oai:d.lib.msu.edu:idetroit_1',
         'metadataPrefix': 'oai_dc'
     }
     req = repo.create_request(request)
-    resp = repo.create_response(req)
-    assert b"<dc:creator>Corr, Dustin L.</dc:creator>" in bytes(resp)
-    assert b"<dc:identifier>etd:1001</dc:identifier>" in bytes(resp)
+    resp = bytes(repo.create_response(req))
+    assert b"<identifier>oai:d.lib.msu.edu:idetroit_1</identifier>" in resp
+    assert b"<dc:creator>Barnhill, Bryan, 1986-</dc:creator>" in resp
+    assert b"<dc:identifier>idetroit:1</dc:identifier>" in resp
+    assert b"<ignoreme>Just a test.</ignoreme>" in resp
+    assert b"<setSpec>vvl:idetroit</setSpec>" in resp
 
     # Valid identifier with mods prefix
     request = {
@@ -71,13 +71,8 @@ def test_GetRecord():
     with pytest.raises(OAIErrorIdDoesNotExist):
         resp = repo.create_response(req)
 
-    # Config where API url returns invalid XML
-    repo = oai_repo.OAIRepository("tests/configs/repo4.json")
-    request = {
-        'verb': 'GetRecord',
-        'identifier': 'oai:d.lib.msu.edu:etd_1001',
-        'metadataPrefix': 'oai_dc'
-    }
-    req = repo.create_request(request)
-    with pytest.raises(OAIRepoExternalException):
-        resp = repo.create_response(req)
+    # Return record header with Python datetime for timestamp
+    #TODO
+
+    # Config where API url returns invalid data
+    #TODO

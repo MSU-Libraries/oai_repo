@@ -6,18 +6,40 @@ from .request import OAIRequest
 from .response import OAIResponse
 
 
-class OAISetValidator:
-    """
-    """
+class SetValidator:
+    """Validator for the Set class"""
+    def errors(self):
+        """
+        Verify fields are valid and present where required. Returning a list of descriptive
+        errors if any issues were found.
+        """
+        failures = []
+        failures.extend(self._spec_failures())
+        failures.extend(self._name_failures())
+        failures.extend(self._description_failures())
+        return failures
+
+    def _spec_failures(self):
+        """Return a list of spec failures"""
+        # TODO
+        return []
+
+    def _name_failures(self):
+        """Return a list of name failures"""
+        # TODO
+        return []
+
+    def _description_failures(self):
+        """Return a list of description failures"""
+        # TODO
+        return []
 
 
 class ListSetsRequest(OAIRequest):
     """
     Parse a request for the ListSets verb
-    raises:
+    Raises:
         OAIErrorBadArgument
-        OAIErrorBadResumptionToken
-        OAIErrorNoSetHierarchy
     """
     def __init__(self):
         super().__init__()
@@ -30,15 +52,28 @@ class ListSetsRequest(OAIRequest):
             self.resumptiontoken = self.args["resumptionToken"]
 
 class ListSetsResponse(OAIResponse):
-    """Generate a resposne for the ListSets verb"""
+    """
+    Generate a response for the ListSets verb
+    Raises:
+        OAIErrorBadResumptionToken
+        OAIErrorNoSetHierarchy
+    """
     def body(self) -> etree.Element:
         """Response body"""
-        #TODO alternate ideas: class implemented and registerd externally?
+        # TODO cursor, total count, resumption token
+        setspecs, _, _ = self.repository.data.list_set_specs()
+        if setspecs is None:
+            raise OAIErrorNoSetHierarchy("Repository does not support sets.")
 
-        setspecs = self.repository.apiqueries.list_sets(self.resuptiontoken)
         xmlb = etree.Element("ListSets")
         for setspec in setspecs:
+            setobj = self.repository.data.get_set(setspec)
             xset = etree.SubElement(xmlb, "set")
-            xsetspec = etree.SubElement(xset, "setSpec")
-            xsetspec.text = setspec
+            xspec = etree.SubElement(xset, "setSpec")
+            xspec.text = setobj.spec
+            xname = etree.SubElement(xset, "setName")
+            xname.text = setobj.name
+            for desc in setobj.description:
+                xname = etree.SubElement(xset, "setDescription")
+                xname.append(desc)
         return xmlb

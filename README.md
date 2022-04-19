@@ -3,13 +3,14 @@ The `oai_repo` Python module provides a configurable implementation of an
 [OAI-PMH](http://openarchives.org/OAI/openarchivesprotocol.html) compatible repository.
 
 At its simplest, using `oai_repo` involves:
-1. Defining a config file.
+1. Implementeing a `DataInterface` class to perform several pre-defined actions.
 2. Adding a few lines of Python code similar to:
 ```python
 import oai_repo
+from .myoaidata import MyOAIData
 
-# Create the repository, loading the config
-repo = oai_repo.OAIRepository("/my/config.json")
+# Create the repository, passing your implemented DataInterface
+repo = oai_repo.OAIRepository(MyOAIData())
 
 # Pass in URL arguments as a dict to be processed
 response = repo.process( { "verb": "Identify" } )
@@ -46,53 +47,23 @@ Resulting in a complete OAI response:
 ```
 
 ## Features
-* Works with either a JSON or XML based API backends.
+* Completely customizable to work with any backend you have.
 * Compliant to the OAI-PMH 2.0 specification.
 * Easy to integrate within any Python application.
 
 ## Installation
-Requires Python 3.9+
+Requires Python 3.10+
 
 Installation via `pip` is recommended:
 ```
 pip install oai_repo
 ```
 
-## The Configuration File
-The `oai_repo` config file is a JSON file which specifies all the information your OAI-PMH repository needs to operate.
+## Implementing the DataInterface Class
+TODO docs placeholder
 
-Fields in the config file are:  
-`repositoryName` _(Required, String)_: The name of the repository put into the OAI `Identify` verb.
-
-`baseURL` _(Required, String)_: The URL reported in the OAI `Identify` verb and in the `request` element in all responses.
-
-`adminEmail` _(Required, List, Minimum 1)_: A list of email addresses to include in the `Identify` verb.
-
-`earliestDatestamp` _(Required, Dict)_: Define the earliest datestamp as reported in the `Identify` verb. May be set in two ways:
-
-1. `static` _(String)_: A manually set datestamp string.
-2. `url`/`*path` pair: Dynamically query for this value.
-
-`deletedRecord` _(Required, String)_: The value to return in the OAI `Identify` verb.
-
-`granularity` _(Required, String)_: The value to return in the OAI `Identify` verb.
-
-`compression` _(Optional, List)_: A list of supported compression types. Per the OAI-PMH specification, do not set the implied `identity` coding.
-
-`description` _(Optional, List)_: A list of XML files to load and serve as descriptions in the OAI `Identify` verb. This file must have a root `<description>` element with appropriate XML namespaces set where needed.
-
-`metadataFormats` _(Required, List)_: List of metadata formats that will be made available via OAI repository.
- * `metadataPrefix` _(String)_: The value to be placed in the `ListMetadataFormats` response.
- * `schema` _(String)_: The value to be placed in the `ListMetadataFormats` response.
- * `metadataNamespace` _(String)_: The to be value placed in the `ListMetadataFormats` response.
- * `fieldValue` _(String)_: The value to be matched in `metadataFormatsQuery.fieldValues`. (An identifier is considered to have a metadata format when `fieldValue` is contained within the results of the `fieldValues` query.)
-
-`apiQueries` _(Required, Dict)_: TODO can use `$$`
- * `idExists` _(URL/Path Pair)_: TODO can use `$$`
- * `metadataFieldValues` _(URL/Path Pair)_: TODO can use `$$`
- * `recordMetadata` _(URL)_: TODO can use `$$`
-
-`localId` _(Required, Dict)_: TODO
+## Available Helper Methods
+TODO docs placeholder
 
 ### URL/Path Pairs
 To have the OAI repository load data dymanically, the config file allows for
@@ -113,7 +84,9 @@ Once the config file is defined, adding `oai_repo` to your application is simple
 Create respository instance, passing in config:
 ```python
 import oai_repo
-repo = oai_repo.OAIRepository("/path/config.json")
+from .myoaidata import MyOAIData
+
+repo = oai_repo.OAIRepository(MyOAIData)
 ```
 
 Pass in URL arguments as a dict to process the request:

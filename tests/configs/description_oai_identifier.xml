@@ -1,8 +1,0 @@
-<description xmlns="http://www.openarchives.org/OAI/2.0/" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
-    <oai-identifier xsi:schemaLocation="http://www.openarchives.org/OAI/2.0/oai-identifier http://www.openarchives.org/OAI/2.0/oai-identifier.xsd">
-        <scheme>oai</scheme>
-        <repositoryIdentifier>d.lib.msu.edu</repositoryIdentifier>
-        <delimiter>:</delimiter>
-        <sampleIdentifier>oai:d.lib.msu.edu:123</sampleIdentifier>
-    </oai-identifier>
-</description>

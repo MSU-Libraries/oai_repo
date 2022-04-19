@@ -7,8 +7,7 @@ from lxml import etree
 import validators
 from .request import OAIRequest
 from .response import OAIResponse
-from .api import apicall_querypath
-from .helpers import bytes_to_xml
+from .helpers import bytes_to_xml, granularity_format
 
 class IdentifyValidator:
     """Validator for the Identify class"""
@@ -134,10 +133,7 @@ class IdentifyResponse(OAIResponse):
         granularity.text = identify.granularity
         edvalue = identify.earliest_datestamp
         if not isinstance(edvalue, str):
-            if granularity == "YYYY-MM-DD":
-                edvalue = edvalue.strftime("%Y-%m-%d")
-            else:
-                edvalue = edvalue.strftime("%Y-%m-%dT%H:%M:%SZ")
+            edvalue = granularity_format(granularity, edvalue)
         earliestdatestamp = etree.SubElement(xmlb, "earliestDatestamp")
         earliestdatestamp.text = edvalue
         for desc in identify.description:
