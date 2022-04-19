@@ -86,7 +86,7 @@ Create respository instance, passing in config:
 import oai_repo
 from .myoaidata import MyOAIData
 
-repo = oai_repo.OAIRepository(MyOAIData)
+repo = oai_repo.OAIRepository(MyOAIData())
 ```
 
 Pass in URL arguments as a dict to process the request:
@@ -108,7 +108,7 @@ The `OAIRepository` may raise the `OAIRepoInternalException`
 and `OAIRepoExternalException` exceptions:
 ```python
 try:
-    repo = oai_repo.OAIRepository("/path/config.json")
+    repo = oai_repo.OAIRepository(MyOAIData())
     response = repo.process( args )
 except oai_repo.OAIRepoExternalException as exc:
     # An API call timed out or returned a non-200 HTTP code.

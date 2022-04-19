@@ -93,15 +93,15 @@ class GetRecordResponse(OAIResponse):
         # Header
         head = self.repository.data.get_record_header(identifier)
         xhead = etree.SubElement(xmlb, "header")
-        xident = etree.SubElement(xmlb, "identifier")
+        xident = etree.SubElement(xhead, "identifier")
         xident.text = head.identifier
-        xstamp = etree.SubElement(xmlb, "datestamp")
+        xstamp = etree.SubElement(xhead, "datestamp")
         xstamp.text = granularity_format(
                 self.repository.data.get_identify().granularity,
                 head.datestamp
             ) if isinstance(head.datestamp, datetime) else head.datestamp
         for setspec in head.setspecs:
-            xset = etree.SubElement(xmlb, "setSpec")
+            xset = etree.SubElement(xhead, "setSpec")
             xset.text = setspec
         # Metadata
         xmeta = etree.SubElement(xmlb, "metadata")

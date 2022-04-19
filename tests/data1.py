@@ -232,7 +232,7 @@ class GoodData(oai_repo.DataInterface):
             nsmap=oai_repo.NSMAP_OAIDC
         )
 
-        # Create descroption
+        # Create description
         xdesc.set(*oai_repo.OAIDC_SCHEMA)
         for dcf in dcfields:
             if dcf not in set_resp:

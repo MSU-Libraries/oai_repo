@@ -129,8 +129,6 @@ class IdentifyResponse(OAIResponse):
         for compress_type in identify.compression:
             compression = etree.SubElement(xmlb, "compression")
             compression.text = compress_type
-        granularity = etree.SubElement(xmlb, "granularity")
-        granularity.text = identify.granularity
         edvalue = identify.earliest_datestamp
         if not isinstance(edvalue, str):
             edvalue = granularity_format(granularity, edvalue)

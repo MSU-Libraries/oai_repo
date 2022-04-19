@@ -136,7 +136,7 @@ class DataInterface:
         """
         raise NotImplementedError
 
-    def list_set_specs(self, identifier: str=None, cursor: int=0, limit: int=100) -> list[str]|None:
+    def list_set_specs(self, identifier: str=None, cursor: int=0, limit: int=100) -> tuple:
         """
         Return a list of setSpec string for the given identifier string if provided,
         or the list of all valid setSpec strings for the repository if no identifier is None.
@@ -172,7 +172,7 @@ class DataInterface:
         filter_set: str = None,
         cursor: int = 0,
         limit: int = 100
-    ) -> list:
+    ) -> tuple:
         """
         Return valid identifier strings, filtered appropriately to passed parameters.
         Args:
