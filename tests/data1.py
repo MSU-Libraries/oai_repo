@@ -2,18 +2,23 @@ from datetime import datetime
 from lxml import etree
 import oai_repo
 
-
 class GoodData(oai_repo.DataInterface):
     """A OAI DataInterface without any failures"""
+    identifier_transform = oai_repo.Transform([
+        { "prefix": ["del", "oai:d.lib.msu.edu:"] },
+        { "replace": ["_", ":"] }
+    ])
+
     def localid(self, identifier):
-        """ Custom added method to convert to localid"""
-        return oai_repo.Transform([
-            { "prefix": ["del", "oai:d.lib.msu.edu:"] },
-            { "replace": ["_", ":"] }
-        ]).forward(identifier)
+        """Custom method to convert to localid"""
+        return self.identifier_transform.forward(identifier)
+
+    def identifier(self, localid):
+        """Custom method to convert from localid"""
+        return self.identifier_transform.reverse(localid)
 
     def localmetadataid(self, metadataprefix):
-        """ Custom added method to convert metadataPrefix to localmetadataid"""
+        """Custom method to convert metadataPrefix to localmetadataid"""
         return oai_repo.Transform([
             { "prefix": ["del", "oai_"] },
             { "case": ["upper"] }
@@ -114,7 +119,7 @@ class GoodData(oai_repo.DataInterface):
             "jsonpath": "$.response.docs[0].fgs_lastModifiedDate_dt"
         }
         lastmod_match = oai_repo.helpers.apicall_querypath(**lastmod_api)
-        setspecs, _, _ = self.list_set_specs(identifier)
+        setspecs, _, _, _ = self.list_set_specs(identifier)
         return oai_repo.RecordHeader(
             identifier,
             lastmod_match,
@@ -154,31 +159,34 @@ class GoodData(oai_repo.DataInterface):
         testabout = etree.fromstring(b"<ignoreme>Just a test.</ignoreme>")
         return [testabout]
 
-    def list_set_specs(self, identifier: str=None, cursor: int=0, limit: int=100):
+    def list_set_specs(self, identifier: str=None, cursor: int=0):
         """
         Return a list of setSpec string for the given identifier string if provided,
         or the list of all valid setSpec strings for the repository if no identifier is None.
         Args:
             identifier (str): a valid identifier string
             cursor (int): position in results to start from
-            limit (int): maximum number of results to return, starting from cursor position
         Returns:
-            A tuple of length 3:
-             1. A list of setSpec strings or None if the repository does not support sets.
-             2. A `cursor` (int) to send with a `resumptionToken`,
-                or -1 if no `cursor` should be sent,
+            A tuple of length 4:
+             1. (list|None) List of setSpec strings or None if the repository does not support sets.
+             2. (int|None) A `cursor` to send with a `resumptionToken`,
                 or None if no `resuptionToken` is needed.
-             3. The `completeListSize` to send with a `resuptionToken` or Null to not send.
+             3. (int|None) The `completeListSize` to send with a `resumptionToken` or Null to not send.
+             4. (Any|None) An str()-able value which indicates the constant-ness of the complete
+                result set. If any value in the results changes, this value should also
+                change. A changed value will invalidate current `resumptionToken`s.
+                If None, the `resumptionToken`s will only invalidate based on
+                reduction in in `completeListSize`.
         """
         # TODO cursor position, limit
         pid_match = identifier[identifier.rfind(":")+1:].replace("_", "\\:") if identifier else "*\\:root"
         setspec_api = {
-            "url": f"https://sandhill-1.devel.lib.msu.edu/search.json?q=PID:{pid_match}&rows=99999&fl=PID,collection_hierarchy&sort=PID%20asc&facet=false",
+            "url": f"https://sandhill.lib.msu.edu/search.json?q=PID:{pid_match}&rows=99999&fl=PID,collection_hierarchy&sort=PID%20asc&facet=false",
             "jsonpath": "$.response"
         }
         setspec_resp = oai_repo.helpers.apicall_querypath(**setspec_api)
         size = setspec_resp["numFound"]
-        new_cursor = None if cursor > size else cursor + limit
+        new_cursor = None if cursor > size else cursor + self.limit
         setspecs = []
         # generate a setspec
         to_setspec = oai_repo.Transform([
@@ -204,7 +212,7 @@ class GoodData(oai_repo.DataInterface):
                 while len(newset) > 1:
                     newset.pop()
                     setspecs.append(':'.join(newset))
-        return setspecs, new_cursor, size
+        return setspecs, new_cursor, size, None
 
     def get_set(self, setspec: str):
         """
@@ -222,10 +230,12 @@ class GoodData(oai_repo.DataInterface):
             "dc.language", "dc.relation", "dc.coverage", "dc.rights"
         ]
         set_api = {
-            "url": f"https://sandhill-1.devel.lib.msu.edu/search.json?q=PID:{pid_match}&rows=1&fl=fgs_label_s,{','.join(dcfields)}&facet=false",
+            "url": f"https://sandhill.lib.msu.edu/search.json?q=PID:{pid_match}&rows=1&fl=fgs_label_s,{','.join(dcfields)}&facet=false",
             "jsonpath": "$.response.docs[0]"
         }
         set_resp = oai_repo.helpers.apicall_querypath(**set_api)
+        if set_resp is None:
+            return None
 
         xdesc = etree.Element(
             b"{" + oai_repo.NSMAP_OAIDC["oai_dc"] + b"}dc",
@@ -255,8 +265,7 @@ class GoodData(oai_repo.DataInterface):
         filter_from: datetime = None,
         filter_until: datetime = None,
         filter_set: str = None,
-        cursor: int = 0,
-        limit: int = 100
+        cursor: int = 0
     ):
         """
         Return valid identifier strings, filtered appropriately to passed parameters.
@@ -266,13 +275,33 @@ class GoodData(oai_repo.DataInterface):
             filter_until (datetime.datetime): Include only identifiers on or before given datetime.
             filter_set (str): Include only identifers within the matching setSpec string.
             cursor (int): position in results to start retrieving from
-            limit (int): maximum number of results to return, starting from cursor position
         Returns:
-            A tuple of length 3:
-             1. A list of valid identifier strings for the repository, filtered appropriately.
-             2. A `cursor` (int) to send with a `resumptionToken`,
-                or -1 if no `cursor` should be sent,
+            A tuple of length 4:
+             1. (list) Valid identifier strings for the repository, filtered appropriately.
+             2. (int|None) A `cursor` to send with a `resumptionToken`,
                 or None if no `resuptionToken` is needed.
-             3. The `completeListSize` to send with a `resuptionToken`, or Null not send.
+             3. (int|None) The `completeListSize` to send with a `resumptionToken` or Null to not send.
+             4. (Any|None) An str()-able value which indicates the constant-ness of the complete
+                result set. If any value in the results changes, this value should also
+                change. A changed value will invalidate current `resumptionToken`s.
+                If None, the `resumptionToken`s will only invalidate based on
+                reduction in in `completeListSize`.
         """
-        raise NotImplementedError
+        identifier_url = (
+            "https://sandhill.lib.msu.edu/search.json?"
+            f"q=-PID:*\\:root&rows={int(self.limit)}&fl=PID&sort=PID%20asc&facet=false"
+        )
+        if (cursor := int(cursor)) > 0:
+            identifier_url += f"&start={cursor}"
+        # TODO filter_from: datetime = None
+        # TODO filter_until: datetime = None
+        # TODO filter_set: str = None
+        identifier_resp = oai_repo.helpers.apicall_querypath(
+            url=identifier_url,
+            jsonpath="$.response"
+        )
+        size = identifier_resp["numFound"]
+        new_cursor = None if cursor > size else cursor + self.limit
+        pids = oai_repo.helpers.jsonpath_find(identifier_resp, '$.docs[*].PID')
+        identifiers = [self.identifier(pid) for pid in pids]
+        return identifiers, new_cursor, size, None

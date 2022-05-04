@@ -104,8 +104,12 @@ Or response can be cast into a fully formed XML document:
 xml_doc_as_bytes = bytes(response)
 ```
 
-The `OAIRepository` may raise the `OAIRepoInternalException`
-and `OAIRepoExternalException` exceptions:
+### Exceptions
+The implementation of all methods in the `DataInterface` is required. Any
+non-defined method will raise a `NotImplementedError`.  
+
+With a fully implemented `DataInterface`, the `OAIRepository` may raise the
+`OAIRepoInternalException` and `OAIRepoExternalException` exceptions.
 ```python
 try:
     repo = oai_repo.OAIRepository(MyOAIData())
@@ -114,7 +118,7 @@ except oai_repo.OAIRepoExternalException as exc:
     # An API call timed out or returned a non-200 HTTP code.
     # Log the failure and abort with server HTTP 503.
 except oai_repo.OAIRepoInternalException as exc:
-    # There is a missing or bad configuration setting.
+    # There is a fault in how the DataInterface was implemented.
     # Log the failure and abort with server HTTP 500.
 ```
 

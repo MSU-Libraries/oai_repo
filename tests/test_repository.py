@@ -75,3 +75,13 @@ def test_OAIRepository_process():
     response = repo.process(request)
     assert isinstance(response, OAIErrorResponse)
     assert b"idDoesNotExist" in bytes(response)
+
+def test_OAIRepository_GoodData():
+    repo = oai_repo.OAIRepository(GoodData())
+
+    set1 = repo.data.get_set("vvl")
+    assert set1.name == "G. Robert Vincent Voice Library Collection"
+    set2 = repo.data.get_set("vvl:wosl")
+    assert set2.name == "Women's Overseas Service League Oral History Project"
+    set3 = repo.data.get_set("notarealset")
+    assert set3 is None

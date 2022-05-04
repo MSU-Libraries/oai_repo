@@ -29,4 +29,6 @@ class ListRecordsResponse(OAIResponse):
     """Generate a resposne for the ListRecords verb"""
     def body(self) -> etree.Element:
         """Response body"""
-        return "TODO"
+        # TODO
+        xmlb = etree.Element("ListRecords")
+        return xmlb

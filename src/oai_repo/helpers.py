@@ -35,6 +35,21 @@ def granularity_format(granularity: str, timestamp: datetime) -> str:
         if granularity == "YYYY-MM-DD" \
         else timestamp.strftime("%Y-%m-%dT%H:%M:%SZ")
 
+def jsonpath_find(data: dict|list, path: str):
+    """
+    Get matching values for a given JSONPath
+    Args:
+        data: The already loaded JSON data
+        path: The JSONPath to find
+    Returns:
+        A list of matching values
+    Raises:
+        jsonpath_ng.exceptions.JSONPathError on jsonpath failure
+    """
+    pattern = jsonpath_ng.parse(path)
+    matches = pattern.find(data)
+    return [match.value for match in matches]
+
 def jsonpath_find_first(data: dict|list, path: str):
     """
     Get the first matching value for a given JSONPath
@@ -46,9 +61,21 @@ def jsonpath_find_first(data: dict|list, path: str):
     Raises:
         jsonpath_ng.exceptions.JSONPathError on jsonpath failure
     """
-    pattern = jsonpath_ng.parse(path)
-    matches = pattern.find(data)
-    return matches[0].value if matches else None
+    matches = jsonpath_find(data, path)
+    return next(iter(matches)) if matches else None
+
+def xpath_find(xmlr: etree.Element, path: str):
+    """
+    Get matching values for a given XPath
+    Args:
+        xmlr: The root xml object to query
+        path: The xpath query
+    Returns:
+        A list of matching values
+    Raises:
+        lxml.etree.XPathError on xpath failure
+    """
+    return xmlr.xpath(path, namespaces=xmlr.nsmap)
 
 def xpath_find_first(xmlr: etree.Element, path: str):
     """
@@ -61,8 +88,8 @@ def xpath_find_first(xmlr: etree.Element, path: str):
     Raises:
         lxml.etree.XPathError on xpath failure
     """
-    matches = xmlr.xpath(path, namespaces=xmlr.nsmap)
-    return matches[0] if matches else None
+    matches = xpath_find(xmlr, path)
+    return next(iter(matches)) if matches else None
 
 # Exact repeat API calls will be pulled from here
 __APICALL_CACHE = {}

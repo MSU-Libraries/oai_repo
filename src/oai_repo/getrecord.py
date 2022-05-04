@@ -91,18 +91,7 @@ class GetRecordResponse(OAIResponse):
         granularity = self.repository.data.get_identify().granularity
         xmlb = etree.Element("GetRecord")
         # Header
-        head = self.repository.data.get_record_header(identifier)
-        xhead = etree.SubElement(xmlb, "header")
-        xident = etree.SubElement(xhead, "identifier")
-        xident.text = head.identifier
-        xstamp = etree.SubElement(xhead, "datestamp")
-        xstamp.text = granularity_format(
-                self.repository.data.get_identify().granularity,
-                head.datestamp
-            ) if isinstance(head.datestamp, datetime) else head.datestamp
-        for setspec in head.setspecs:
-            xset = etree.SubElement(xhead, "setSpec")
-            xset.text = setspec
+        header(self.repository, identifier, xmlb)
         # Metadata
         xmeta = etree.SubElement(xmlb, "metadata")
         xmeta.append(
@@ -115,3 +104,25 @@ class GetRecordResponse(OAIResponse):
             xabout.append(about)
 
         return xmlb
+
+def header(repository: "OAIRepository", identifier: str, xmlb: etree._Element):
+    """
+    Generate and append a <header> OAI element to and XML doc.
+    Args:
+        identifier (str): A valid identifier string
+        xmlb (lxml.etree._Element): The element to add the header to
+    Returns:
+        A lxml.etree._Element for the root of the header
+    """
+    head = repository.data.get_record_header(identifier)
+    xhead = etree.SubElement(xmlb, "header")
+    xident = etree.SubElement(xhead, "identifier")
+    xident.text = head.identifier
+    xstamp = etree.SubElement(xhead, "datestamp")
+    xstamp.text = granularity_format(
+        repository.data.get_identify().granularity,
+        head.datestamp
+    ) if isinstance(head.datestamp, datetime) else head.datestamp
+    for setspec in head.setspecs:
+        xset = etree.SubElement(xhead, "setSpec")
+        xset.text = setspec

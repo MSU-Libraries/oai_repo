@@ -67,6 +67,9 @@ class DataInterface:
     The instantiated instance of this class is then passed to the
     OAI repository.
     """
+    # Max number of results to return per request for: ListSets, ListIdentifiers, ListRecords
+    limit: int = 50
+
     def get_identify(self) -> Identify:
         """
         Create and return an instantiated Identify object.
@@ -136,21 +139,24 @@ class DataInterface:
         """
         raise NotImplementedError
 
-    def list_set_specs(self, identifier: str=None, cursor: int=0, limit: int=100) -> tuple:
+    def list_set_specs(self, identifier: str=None, cursor: int=0) -> tuple:
         """
         Return a list of setSpec string for the given identifier string if provided,
         or the list of all valid setSpec strings for the repository if no identifier is None.
         Args:
             identifier (str): a valid identifier string
             cursor (int): position in results to start from
-            limit (int): maximum number of results to return, starting from cursor position
         Returns:
-            A tuple of length 3:
-             1. A list of setSpec strings or None if the repository does not support sets.
-             2. A `cursor` (int) to send with a `resumptionToken`,
-                or -1 if no `cursor` should be sent,
+            A tuple of length 4:
+             1. (list|None) List of setSpec strings or None if the repository does not support sets.
+             2. (int|None) A `cursor` to send with a `resumptionToken`,
                 or None if no `resuptionToken` is needed.
-             3. The `completeListSize` to send with a `resuptionToken` or Null to not send.
+             3. (int|None) The `completeListSize` to send with a `resumptionToken` or Null to not send.
+             4. (Any|None) An str()-able value which indicates the constant-ness of the complete
+                result set. If any value in the results changes, this value should also
+                change. A changed value will invalidate current `resumptionToken`s.
+                If None, the `resumptionToken`s will only invalidate based on
+                reduction in in `completeListSize`.
         """
         raise NotImplementedError
 
@@ -170,8 +176,7 @@ class DataInterface:
         filter_from: datetime = None,
         filter_until: datetime = None,
         filter_set: str = None,
-        cursor: int = 0,
-        limit: int = 100
+        cursor: int = 0
     ) -> tuple:
         """
         Return valid identifier strings, filtered appropriately to passed parameters.
@@ -181,13 +186,16 @@ class DataInterface:
             filter_until (datetime.datetime): Include only identifiers on or before given datetime.
             filter_set (str): Include only identifers within the matching setSpec string.
             cursor (int): position in results to start retrieving from
-            limit (int): maximum number of results to return, starting from cursor position
         Returns:
-            A tuple of length 3:
-             1. A list of valid identifier strings for the repository, filtered appropriately.
-             2. A `cursor` (int) to send with a `resumptionToken`,
-                or -1 if no `cursor` should be sent,
+            A tuple of length 4:
+             1. (list) Valid identifier strings for the repository, filtered appropriately.
+             2. (int|None) A `cursor` to send with a `resumptionToken`,
                 or None if no `resuptionToken` is needed.
-             3. The `completeListSize` to send with a `resuptionToken`, or Null not send.
+             3. (int|None) The `completeListSize` to send with a `resumptionToken` or Null to not send.
+             4. (Any|None) An str()-able value which indicates the constant-ness of the complete
+                result set. If any value in the results changes, this value should also
+                change. A changed value will invalidate current `resumptionToken`s.
+                If None, the `resumptionToken`s will only invalidate based on
+                reduction in in `completeListSize`.
         """
         raise NotImplementedError

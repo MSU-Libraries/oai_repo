@@ -58,7 +58,7 @@ class OAIResponse:
         # request element
         request_elem = etree.SubElement(self.xmlr, "request")
         request_elem.text = self.repository.data.get_identify().base_url
-        if self:
+        if self and self.request:
             for argk, argv in self.request.args.items():
                 request_elem.set(argk, argv)
         # add body element

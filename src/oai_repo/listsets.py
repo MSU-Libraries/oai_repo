@@ -60,8 +60,9 @@ class ListSetsResponse(OAIResponse):
     """
     def body(self) -> etree.Element:
         """Response body"""
+        # TODO identifier, cursor, limit
+        setspecs, cursor, size, unhashed = self.repository.data.list_set_specs()
         # TODO cursor, total count, resumption token
-        setspecs, _, _ = self.repository.data.list_set_specs()
         if setspecs is None:
             raise OAIErrorNoSetHierarchy("Repository does not support sets.")
 
