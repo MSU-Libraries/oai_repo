@@ -90,25 +90,14 @@ class GetRecordResponse(OAIResponse):
 
         granularity = self.repository.data.get_identify().granularity
         xmlb = etree.Element("GetRecord")
-        # Header
-        header(self.repository, identifier, xmlb)
-        # Metadata
-        xmeta = etree.SubElement(xmlb, "metadata")
-        xmeta.append(
-            self.repository.data.get_record_metadata(identifier, metadataprefix)
-        )
-        # About
-        abouts = self.repository.data.get_record_abouts(identifier)
-        for about in abouts:
-            xabout = etree.SubElement(xmlb, "about")
-            xabout.append(about)
-
+        record(self.repository, identifier, metadataprefix, xmlb)
         return xmlb
 
 def header(repository: "OAIRepository", identifier: str, xmlb: etree._Element):
     """
     Generate and append a <header> OAI element to and XML doc.
     Args:
+        repository (OAIRepository): An instantiated repository class
         identifier (str): A valid identifier string
         xmlb (lxml.etree._Element): The element to add the header to
     Returns:
@@ -126,3 +115,27 @@ def header(repository: "OAIRepository", identifier: str, xmlb: etree._Element):
     for setspec in head.setspecs:
         xset = etree.SubElement(xhead, "setSpec")
         xset.text = setspec
+
+def record(repository: "OAIRepository", identifier: str, metadataprefix: str, xmlb: etree._Element):
+    """
+    Generate and append a <record> OAI element to and XML doc.
+    Args:
+        repository (OAIRepository): An instantiated repository class
+        identifier (str): A valid identifier string
+        xmlb (lxml.etree._Element): The element to add the header to
+    Returns:
+        A lxml.etree._Element for the root of the header
+    """
+    xrec = etree.SubElement(xmlb, "record")
+    # Header
+    header(repository, identifier, xrec)
+    # Metadata
+    xmeta = etree.SubElement(xrec, "metadata")
+    xmeta.append(
+        repository.data.get_record_metadata(identifier, metadataprefix)
+    )
+    # About
+    abouts = repository.data.get_record_abouts(identifier)
+    for about in abouts:
+        xabout = etree.SubElement(xrec, "about")
+        xabout.append(about)

@@ -1,4 +1,4 @@
-from datetime import datetime
+from datetime import datetime, timezone
 import pytest
 from lxml import etree
 from oai_repo.resumption import ResumptionToken
@@ -28,7 +28,7 @@ def test_ResumptionToken():
 
     r1.cursor = 0
     r1.complete_list_size = 999
-    r1.expiration_date = datetime(2222,2,22,2,2,2)
+    r1.expiration_date = datetime(2222,2,22,2,2,2,tzinfo=timezone.utc)
     r1.set_state(123456.789)
     assert r1.state_hash == "ef8bbfd41d4cc599"
     assert r1.create() == (
@@ -39,7 +39,7 @@ def test_ResumptionToken():
     assert r2.args == r1.args
     assert r2.cursor == 0
     assert r2.complete_list_size == 999
-    assert r2.expiration_date == datetime(2222,2,22,2,2,2)
+    assert r2.expiration_date == datetime(2222,2,22,2,2,2,tzinfo=timezone.utc)
     assert r2.state_hash == "ef8bbfd41d4cc599"
     assert r2.cursor == r1.cursor
     assert r2.complete_list_size == r1.complete_list_size

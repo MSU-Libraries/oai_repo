@@ -2,7 +2,7 @@ from lxml import etree
 import pytest
 import oai_repo
 from oai_repo.exceptions import OAIErrorBadArgument
-from .data1 import GoodData
+from .data_sets import DataWithSets
 
 def test_Identify():
     # valid Identify oject
@@ -37,7 +37,7 @@ def test_Identify():
 
 def test_IdentifyResponse():
     # earliestDatestamp: static
-    repo = oai_repo.OAIRepository(GoodData())
+    repo = oai_repo.OAIRepository(DataWithSets())
     req = { 'verb': 'Identify' }
     resp = repo.process(req)
     assert b"<repositoryName>My OAI Repo</repositoryName>" in bytes(resp)

@@ -3,7 +3,7 @@ ResumptionToken functionality
 """
 import time
 import base64
-from datetime import datetime
+from datetime import datetime, timezone
 from hashlib import blake2s
 from urllib.parse import urlencode, parse_qs
 from lxml import etree
@@ -104,14 +104,15 @@ class ResumptionToken:
             if 'e' in tdict:
                 self.expiration_date = datetime.fromtimestamp(
                     int(tdict.pop('e'))
-                )
+                ).replace(tzinfo=timezone.utc)
             if 'h' in tdict:
                 self._state_hash = tdict.pop('h')
             self.args = tdict
         except Exception as exc:
             raise OAIErrorBadResumptionToken from exc
 
-        #TODO if expiration date is set and greater than now, raise BadResumptionToken
+        if self.expiration_date and self.expiration_date < datetime.now(timezone.utc):
+            raise OAIErrorBadResumptionToken("The provided resumptionToken has expired.")
 
     def create(self):
         """

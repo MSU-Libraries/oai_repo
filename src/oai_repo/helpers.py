@@ -27,13 +27,21 @@ def bytes_to_xml(bdata: bytes|BytesIO) -> etree._Element:
         bdata = etree.fromstring(bdata)
     return bdata
 
+def datestamp_short(timestamp: datetime) -> str:
+    """Convert a datetime to short form datestamp: YYYY-MM-DD"""
+    return timestamp.strftime("%Y-%m-%d")
+
+def datestamp_long(timestamp: datetime) -> str:
+    """Convert a datetime to long form datestamp: YYYY-MM-DDThh:mm:ssZ"""
+    return timestamp.strftime("%Y-%m-%dT%H:%M:%SZ")
+
 def granularity_format(granularity: str, timestamp: datetime) -> str:
     """
     Format the timestamp according to the OAI granularity and return it.
     """
-    return timestamp.strftime("%Y-%m-%d") \
+    return datestamp_short(timestamp) \
         if granularity == "YYYY-MM-DD" \
-        else timestamp.strftime("%Y-%m-%dT%H:%M:%SZ")
+        else datestamp_long(timestamp)
 
 def jsonpath_find(data: dict|list, path: str):
     """

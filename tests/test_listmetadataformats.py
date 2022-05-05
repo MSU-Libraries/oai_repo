@@ -1,10 +1,10 @@
 import pytest
 import oai_repo
 from oai_repo.exceptions import OAIErrorIdDoesNotExist
-from .data1 import GoodData
+from .data_sets import DataWithSets
 
 def test_ListMetadataFormats():
-    repo = oai_repo.OAIRepository(GoodData())
+    repo = oai_repo.OAIRepository(DataWithSets())
     # No identifier given
     request = { 'verb': 'ListMetadataFormats' }
     req = repo.create_request(request)

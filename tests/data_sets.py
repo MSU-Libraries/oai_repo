@@ -3,7 +3,7 @@ from urllib.parse import quote
 from lxml import etree
 import oai_repo
 
-class GoodData(oai_repo.DataInterface):
+class DataWithSets(oai_repo.DataInterface):
     """A OAI DataInterface without any failures"""
     identifier_transform = oai_repo.Transform([
         { "prefix": ["del", "oai:d.lib.msu.edu:"] },
@@ -287,12 +287,12 @@ class GoodData(oai_repo.DataInterface):
         """
         identifier_url = (
             f"https://sandhill.lib.msu.edu/search.json?q=-PID:*\\:root&rows={int(self.limit)}"
-            f"&fl=PID&sort=PID%20asc&facet=false&start={int(cursor)}"
+            f"&fl=PID&sort=PID asc&facet=false&start={int(cursor)}"
         )
-        if filter_from:
-            ...
-        if filter_until:
-            ...
+        if filter_from or filter_until:
+            date_start = oai_repo.helpers.datestamp_long(filter_from) if filter_from else "*"
+            date_end = oai_repo.helpers.datestamp_long(filter_until) if filter_until else "*"
+            identifier_url += f"&fq=fgs_lastModifiedDate_dt:[{date_start} TO {date_end}]"
         if filter_set:
             singleset = filter_set.split(":")[-1]
             localset = self.setspec_transform.reverse(singleset)

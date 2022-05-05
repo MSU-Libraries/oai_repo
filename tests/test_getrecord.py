@@ -6,10 +6,10 @@ from oai_repo.exceptions import (
     OAIErrorCannotDisseminateFormat,
     OAIRepoExternalException,
 )
-from .data1 import GoodData
+from .data_sets import DataWithSets
 
 def test_GetRecord():
-    repo = oai_repo.OAIRepository(GoodData())
+    repo = oai_repo.OAIRepository(DataWithSets())
 
     # No arguments
     request = { 'verb': 'GetRecord' }

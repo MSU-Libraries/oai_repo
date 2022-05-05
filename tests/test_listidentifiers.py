@@ -4,10 +4,10 @@ from oai_repo.exceptions import (
     OAIErrorBadResumptionToken, OAIErrorCannotDisseminateFormat,
     OAIErrorNoRecordsMatch, OAIErrorNoSetHierarchy
 )
-from .data1 import GoodData
+from .data_sets import DataWithSets
 
 def test_ListIdentifiers():
-    repo = oai_repo.OAIRepository(GoodData())
+    repo = oai_repo.OAIRepository(DataWithSets())
 
     # No resuption token
     request = { 'verb': 'ListIdentifiers', 'metadataPrefix': 'oai_dc' }
@@ -26,7 +26,8 @@ def test_ListIdentifiers():
     resp = bytes(rawresp)
     assert b'<resumptionToken cursor="0" completeListSize="101">' in resp
     assert b"<identifier>oai:d.lib.msu.edu:idetroit_1</identifier>" in resp
-    # Using the resumption token
+
+    # Valid resumption token
     token = rawresp.xpath("//resumptionToken/text()")[0]
     request = { 'verb': 'ListIdentifiers', 'resumptionToken': token }
     req = repo.create_request(request)
@@ -41,20 +42,28 @@ def test_ListIdentifiers():
     assert b'<resumptionToken cursor="100" completeListSize="101"/>' in resp
     assert rawresp.xpath("//resumptionToken/text()") == []
 
-    # Filter from/until
-    #TODO
-
-    # Valid resumption token
-    #TODO
-
     # Repeat resumption token
-    #TODO
+    rawresp = repo.create_response(req)
+    resp = bytes(rawresp)
+    assert b'<resumptionToken cursor="100" completeListSize="101"/>' in resp
+    assert rawresp.xpath("//resumptionToken/text()") == []
+
+    # Filter from/until with no results
+    request = { 'verb': 'ListIdentifiers', 'metadataPrefix': 'oai_dc', "from": "2000-01-01", "until": "2001-12-31" }
+    req = repo.create_request(request)
+    with pytest.raises(OAIErrorNoRecordsMatch):
+        repo.create_response(req)
 
     # Invalid resuption token
-    #TODO
+    request = { 'verb': 'ListIdentifiers', 'resumptionToken': 'invalidtoken' }
+    with pytest.raises(OAIErrorBadResumptionToken):
+        req = repo.create_request(request)
 
     # Invalid metadata format requested
-    #TODO
+    request = { 'verb': 'ListIdentifiers', 'metadataPrefix': 'abcxyz' }
+    req = repo.create_request(request)
+    with pytest.raises(OAIErrorCannotDisseminateFormat):
+        repo.create_response(req)
 
     # Repository not configured for sets support
     #TODO

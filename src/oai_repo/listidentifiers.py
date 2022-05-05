@@ -1,12 +1,15 @@
 """
 Implementation of ListIdentifiers verb
 """
-from datetime import datetime
 from lxml import etree
 from .request import OAIRequest
 from .response import OAIResponse
 from .getrecord import header
 from .resumption import ResumptionToken
+from .exceptions import (
+    OAIErrorNoRecordsMatch, OAIErrorBadResumptionToken,
+    OAIErrorCannotDisseminateFormat
+)
 
 
 class ListIdentifiersRequest(OAIRequest):
@@ -61,8 +64,8 @@ class ListIdentifiersResponse(OAIResponse):
 
         identifiers, new_size, state = self.repository.data.list_identifiers(
             self.request.metadata_prefix,
-            self.validDate(self.request.filter_from),
-            self.validDate(self.request.filter_until),
+            self.repository.valid_date(self.request.filter_from),
+            self.repository.valid_date(self.request.filter_until),
             self.request.filter_set,
             cursor
         )
@@ -73,7 +76,6 @@ class ListIdentifiersResponse(OAIResponse):
             new_size < self.request.token.complete_list_size
         ):
             raise OAIErrorBadResumptionToken("Token is no longer valid as data has changed.")
-        # TODO state_hash change results in badReumptionToken
 
         if not identifiers:
             raise OAIErrorNoRecordsMatch("No identifiers were found matching given parameters.")
@@ -98,31 +100,7 @@ class ListIdentifiersResponse(OAIResponse):
                 token.args['set'] = self.request.filter_set
             if (token_xml := token.xml(self.repository.data.limit)) is not None:
                 xmlb.append(token_xml)
+        # State change
+        if self.request.token.state_hash and self.request.token.state_hash != token.state_hash:
+            raise OAIErrorBadResumptionToken("Token is no longer valid as data has changed.")
         return xmlb
-
-    def validDate(self, datestr: str):
-        """
-        Parse datestr into a datetime object;
-        Args:
-            datestr (str|None): An unvalidated date string
-        Returns:
-            A datetime.datetime object, or None if datestr was None.
-        Raises:
-            OAIErrorBadArgument If an invalid date is passed
-                or if date was not valid according to the repository
-                granularity.
-        """
-        allowed_datefmts = ["%Y-%m-%d"]
-        if self.repository.data.get_identify().granularity == "YYYY-MM-DDThh:mm:ssZ":
-            allowed_datefmts.append("%Y-%m-%dT%H:%M:%SZ")
-
-        date = None
-        if datestr is not None:
-            try:
-                for datefmt in allowed_datefmts:
-                    date = datetime.strptime(datestr, "%Y-%m-%d")
-            except (TypeError, ValueError):
-                raise OAIErrorBadArgument(
-                    "A date passed in not in a valid format. See Identify granularity."
-                ) from None
-        return date

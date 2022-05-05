@@ -4,10 +4,10 @@ from oai_repo.identify import IdentifyResponse
 from oai_repo.listmetadataformats import ListMetadataFormatsResponse
 from oai_repo.error import OAIErrorResponse
 from oai_repo.exceptions import OAIErrorIdDoesNotExist
-from .data1 import GoodData
+from .data_sets import DataWithSets
 
 def test_OAIRepository_process():
-    repo = oai_repo.OAIRepository(GoodData())
+    repo = oai_repo.OAIRepository(DataWithSets())
 
     # Valid verb gets correct response class
     request = {
@@ -56,7 +56,7 @@ def test_OAIRepository_process():
     assert b"badArgument" in bytes(response)
 
     # ListMetadataFormats accepts identifier arg
-    repo = oai_repo.OAIRepository(GoodData())
+    repo = oai_repo.OAIRepository(DataWithSets())
     request = {
         'verb': 'ListMetadataFormats',
         'identifier': 'oai:d.lib.msu.edu:etd_1000'
@@ -76,8 +76,8 @@ def test_OAIRepository_process():
     assert isinstance(response, OAIErrorResponse)
     assert b"idDoesNotExist" in bytes(response)
 
-def test_OAIRepository_GoodData():
-    repo = oai_repo.OAIRepository(GoodData())
+def test_OAIRepository_DataWithSets():
+    repo = oai_repo.OAIRepository(DataWithSets())
 
     set1 = repo.data.get_set("vvl")
     assert set1.name == "G. Robert Vincent Voice Library Collection"

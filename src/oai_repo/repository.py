@@ -2,6 +2,7 @@
 OAIRepository functionality
 """
 from typing import NamedTuple
+from datetime import datetime, timezone
 from .getrecord import GetRecordRequest, GetRecordResponse
 from .identify import IdentifyRequest, IdentifyResponse
 from .listidentifiers import ListIdentifiersRequest, ListIdentifiersResponse
@@ -9,7 +10,8 @@ from .listmetadataformats import ListMetadataFormatsRequest, ListMetadataFormats
 from .listrecords import ListRecordsRequest, ListRecordsResponse
 from .listsets import ListSetsRequest, ListSetsResponse
 from .exceptions import (
-    OAIError, OAIErrorBadVerb, OAIErrorIdDoesNotExist, OAIErrorCannotDisseminateFormat
+    OAIError, OAIErrorBadVerb, OAIErrorIdDoesNotExist,
+    OAIErrorCannotDisseminateFormat, OAIErrorBadArgument
 )
 from .error import OAIErrorResponse
 from .request import OAIRequest
@@ -87,3 +89,30 @@ class OAIRepository:
     def setname(self, localsetname: str) -> str:
         """Convert a local setname into an OAI setname value"""
         return Transform(self.config.localsetname).forward(localsetname)
+
+    def valid_date(self, datestr: str):
+        """
+        Parse an argument provided datestr into a datetime object;
+        Args:
+            datestr (str|None): An unvalidated date string
+        Returns:
+            A datetime.datetime object, or None if datestr was None.
+        Raises:
+            OAIErrorBadArgument If an invalid date is passed
+                or if date was not valid according to the repository
+                granularity.
+        """
+        allowed_datefmts = ["%Y-%m-%d"]
+        if self.data.get_identify().granularity == "YYYY-MM-DDThh:mm:ssZ":
+            allowed_datefmts.append("%Y-%m-%dT%H:%M:%SZ")
+
+        date = None
+        if datestr is not None:
+            try:
+                for datefmt in allowed_datefmts:
+                    date = datetime.strptime(datestr, datefmt).replace(tzinfo=timezone.utc)
+            except (TypeError, ValueError):
+                raise OAIErrorBadArgument(
+                    "A date passed in not in a valid format. See Identify for granularity."
+                ) from None
+        return date
