@@ -24,6 +24,12 @@ class ResumptionToken:
         self.complete_list_size: int = None
         self.expiration_date: datetime = None
 
+    def __repr__(self):
+        return (
+            f"ResumptionToken(cursor={self.cursor}, size={self.complete_list_size}, "
+            f"expiration={self.expiration_date}, args={self.args})"
+        )
+
     @property
     def state_hash(self):
         """
@@ -44,20 +50,33 @@ class ResumptionToken:
         if state:
             self._state_hash = blake2s(str(state).encode('utf8'), digest_size=8).hexdigest()
 
-    def xml(self) -> etree._Element:
+    def __bool__(self):
+        """
+        Return True if this ResumptionToken instance have data sufficient to generate
+        a valid resumptionToken.
+        """
+        return bool(self.args and self.create())
+
+    def xml(self, limit: int) -> etree._Element:
         """
         Return a formed xml element for the token
+        Args:
+            limit (int): The limit number of elements tha can be returned.
+                         Used to determine if the token string should be included.
         Returns:
             The formed XML for the token, or None if no token can be generated
         """
         token = self.create()
-        if not self.args or (not token and not self.cursor):
+        if not self.args or not token:
             return None
 
+        cursor = self.cursor if self.cursor is not None else 0
         xmlr = etree.Element("resumptionToken")
-        xmlr.text = token
-        if self.cursor:
-            xmlr.set('cursor', str(self.cursor))
+        # Only add a token string if there are sufficient results to warrant it
+        if self.complete_list_size is not None and cursor + limit < self.complete_list_size:
+            xmlr.text = token
+
+        xmlr.set('cursor', str(cursor))
         if self.complete_list_size:
             xmlr.set('completeListSize', str(self.complete_list_size))
         if self.expiration_date:
@@ -67,12 +86,6 @@ class ResumptionToken:
             )
             xmlr.set('expiration_date', expdate_str)
         return xmlr
-
-    def __bytes__(self):
-        """
-        Return the XML response as bytes
-        """
-        return etree.tostring(self.xml())
 
     def parse(self, token):
         """

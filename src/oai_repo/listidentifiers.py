@@ -24,6 +24,7 @@ class ListIdentifiersRequest(OAIRequest):
         self.optional_args = ["from", "until", "set"]
         self.required_args = ["metadataPrefix"]
         self.exclusive_arg = "resumptionToken"
+        self.token = ResumptionToken()
 
     def post_parse(self):
         """Runs after args are parsed"""
@@ -34,15 +35,13 @@ class ListIdentifiersRequest(OAIRequest):
                     return arg[key]
             return None
 
-        token = ResumptionToken()
         if "resumptionToken" in self.args:
-            token.parse(self.args["resumptionToken"])
+            self.token.parse(self.args["resumptionToken"])
 
-        self.cursor = token.cursor if token.cursor else 0
-        self.filter_from = first_match("from", token.args, self.args)
-        self.filter_until = first_match("until", token.args, self.args)
-        self.filter_set = first_match("set", token.args, self.args)
-        self.metadata_prefix = first_match("metadataPrefix", token.args, self.args)
+        self.filter_from = first_match("from", self.token.args, self.args)
+        self.filter_until = first_match("until", self.token.args, self.args)
+        self.filter_set = first_match("set", self.token.args, self.args)
+        self.metadata_prefix = first_match("metadataPrefix", self.token.args, self.args)
         if not self.metadata_prefix:
             raise OAIErrorBadResumptionToken("The resumption token is not valid for given verb.")
 
@@ -55,15 +54,26 @@ class ListIdentifiersResponse(OAIResponse):
         if self.request.metadata_prefix not in [mdf.metadata_prefix for mdf in mdformats]:
             raise OAIErrorCannotDisseminateFormat("metadataFormat not suported by this repository")
 
-        identifiers, new_cursor, size, state = self.repository.data.list_identifiers(
+        cursor = (
+            self.request.token.cursor + self.repository.data.limit
+            if self.request.token.cursor is not None else 0
+        )
+
+        identifiers, new_size, state = self.repository.data.list_identifiers(
             self.request.metadata_prefix,
             self.validDate(self.request.filter_from),
             self.validDate(self.request.filter_until),
             self.request.filter_set,
-            self.request.cursor
+            cursor
         )
 
-        # TODO badToken if total size was reduced since previous token was generated
+        if (
+            new_size is not None and
+            self.request.token.complete_list_size is not None and
+            new_size < self.request.token.complete_list_size
+        ):
+            raise OAIErrorBadResumptionToken("Token is no longer valid as data has changed.")
+        # TODO state_hash change results in badReumptionToken
 
         if not identifiers:
             raise OAIErrorNoRecordsMatch("No identifiers were found matching given parameters.")
@@ -74,19 +84,19 @@ class ListIdentifiersResponse(OAIResponse):
             header(self.repository, identifier, xmlb)
 
         # append a resumptionToken if needed
-        if new_cursor:
+        if new_size > self.repository.data.limit:
             token = ResumptionToken()
-            token.cursor = new_cursor
-            token.complete_list_size = size
+            token.cursor = cursor
+            token.complete_list_size = new_size
             token.set_state(state)
             token.args = { "metadataPrefix": self.request.metadata_prefix }
             if self.request.filter_from:
                 token.args['from'] = self.request.filter_from
             if self.request.filter_until:
                 token.args['until'] = self.request.filter_until
-            if self.request.filter_from:
+            if self.request.filter_set:
                 token.args['set'] = self.request.filter_set
-            if (token_xml := token.xml()) is not None:
+            if (token_xml := token.xml(self.repository.data.limit)) is not None:
                 xmlb.append(token_xml)
         return xmlb
 

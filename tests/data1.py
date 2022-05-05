@@ -1,4 +1,5 @@
 from datetime import datetime
+from urllib.parse import quote
 from lxml import etree
 import oai_repo
 
@@ -7,6 +8,11 @@ class GoodData(oai_repo.DataInterface):
     identifier_transform = oai_repo.Transform([
         { "prefix": ["del", "oai:d.lib.msu.edu:"] },
         { "replace": ["_", ":"] }
+    ])
+    setspec_transform = oai_repo.Transform([
+        { "prefix": ["del", "info:fedora/"] },
+        { "suffix": ["del", ":root"] },
+        { "replace": [":", "_"] }   # colons disallowed per OAI spec
     ])
 
     def localid(self, identifier):
@@ -119,7 +125,7 @@ class GoodData(oai_repo.DataInterface):
             "jsonpath": "$.response.docs[0].fgs_lastModifiedDate_dt"
         }
         lastmod_match = oai_repo.helpers.apicall_querypath(**lastmod_api)
-        setspecs, _, _, _ = self.list_set_specs(identifier)
+        setspecs, _, _ = self.list_set_specs(identifier)
         return oai_repo.RecordHeader(
             identifier,
             lastmod_match,
@@ -167,12 +173,10 @@ class GoodData(oai_repo.DataInterface):
             identifier (str): a valid identifier string
             cursor (int): position in results to start from
         Returns:
-            A tuple of length 4:
+            A tuple of length 3:
              1. (list|None) List of setSpec strings or None if the repository does not support sets.
-             2. (int|None) A `cursor` to send with a `resumptionToken`,
-                or None if no `resuptionToken` is needed.
-             3. (int|None) The `completeListSize` to send with a `resumptionToken` or Null to not send.
-             4. (Any|None) An str()-able value which indicates the constant-ness of the complete
+             2. (int|None) The `completeListSize` to send with a `resumptionToken` or Null to not send.
+             3. (Any|None) An str()-able value which indicates the constant-ness of the complete
                 result set. If any value in the results changes, this value should also
                 change. A changed value will invalidate current `resumptionToken`s.
                 If None, the `resumptionToken`s will only invalidate based on
@@ -181,19 +185,15 @@ class GoodData(oai_repo.DataInterface):
         # TODO cursor position, limit
         pid_match = identifier[identifier.rfind(":")+1:].replace("_", "\\:") if identifier else "*\\:root"
         setspec_api = {
-            "url": f"https://sandhill.lib.msu.edu/search.json?q=PID:{pid_match}&rows=99999&fl=PID,collection_hierarchy&sort=PID%20asc&facet=false",
+            "url": (
+                f"https://sandhill.lib.msu.edu/search.json?q=PID:{pid_match}&rows=99999"
+                "&fl=PID,collection_hierarchy&sort=PID%20asc&facet=false"
+            ),
             "jsonpath": "$.response"
         }
         setspec_resp = oai_repo.helpers.apicall_querypath(**setspec_api)
         size = setspec_resp["numFound"]
-        new_cursor = None if cursor > size else cursor + self.limit
         setspecs = []
-        # generate a setspec
-        to_setspec = oai_repo.Transform([
-            { "prefix": ["del", "info:fedora/"] },
-            { "suffix": ["del", ":root"] },
-            { "replace": [":", "_"] }   # colons disallowed per OAI spec
-        ])
         for doc in setspec_resp["docs"]:
             # prepend with self PID
             newset = [doc["PID"]]
@@ -202,7 +202,7 @@ class GoodData(oai_repo.DataInterface):
                 newset.extend(doc["collection_hierarchy"][:-1])
             # transform all
             for idx, val in enumerate(newset):
-                newset[idx] = to_setspec.forward(val)
+                newset[idx] = self.setspec_transform.forward(val)
             # reverse order and join by ':'
             newset = list(reversed(newset))
             if not identifier:
@@ -212,7 +212,7 @@ class GoodData(oai_repo.DataInterface):
                 while len(newset) > 1:
                     newset.pop()
                     setspecs.append(':'.join(newset))
-        return setspecs, new_cursor, size, None
+        return setspecs, size, None
 
     def get_set(self, setspec: str):
         """
@@ -276,32 +276,33 @@ class GoodData(oai_repo.DataInterface):
             filter_set (str): Include only identifers within the matching setSpec string.
             cursor (int): position in results to start retrieving from
         Returns:
-            A tuple of length 4:
+            A tuple of length 3:
              1. (list) Valid identifier strings for the repository, filtered appropriately.
-             2. (int|None) A `cursor` to send with a `resumptionToken`,
-                or None if no `resuptionToken` is needed.
-             3. (int|None) The `completeListSize` to send with a `resumptionToken` or Null to not send.
-             4. (Any|None) An str()-able value which indicates the constant-ness of the complete
+             2. (int|None) The `completeListSize` to send with a `resumptionToken` or Null to not send.
+             3. (Any|None) An str()-able value which indicates the constant-ness of the complete
                 result set. If any value in the results changes, this value should also
                 change. A changed value will invalidate current `resumptionToken`s.
                 If None, the `resumptionToken`s will only invalidate based on
                 reduction in in `completeListSize`.
         """
         identifier_url = (
-            "https://sandhill.lib.msu.edu/search.json?"
-            f"q=-PID:*\\:root&rows={int(self.limit)}&fl=PID&sort=PID%20asc&facet=false"
+            f"https://sandhill.lib.msu.edu/search.json?q=-PID:*\\:root&rows={int(self.limit)}"
+            f"&fl=PID&sort=PID%20asc&facet=false&start={int(cursor)}"
         )
-        if (cursor := int(cursor)) > 0:
-            identifier_url += f"&start={cursor}"
-        # TODO filter_from: datetime = None
-        # TODO filter_until: datetime = None
-        # TODO filter_set: str = None
+        if filter_from:
+            ...
+        if filter_until:
+            ...
+        if filter_set:
+            singleset = filter_set.split(":")[-1]
+            localset = self.setspec_transform.reverse(singleset)
+            identifier_url += "&fq=collection_hierarchy:"+quote(localset.replace(":", "\\:"))
+
         identifier_resp = oai_repo.helpers.apicall_querypath(
             url=identifier_url,
             jsonpath="$.response"
         )
         size = identifier_resp["numFound"]
-        new_cursor = None if cursor > size else cursor + self.limit
         pids = oai_repo.helpers.jsonpath_find(identifier_resp, '$.docs[*].PID')
         identifiers = [self.identifier(pid) for pid in pids]
-        return identifiers, new_cursor, size, None
+        return identifiers, size, None

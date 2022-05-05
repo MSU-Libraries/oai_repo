@@ -44,7 +44,10 @@ class OAIRequest:
                 f"Argument {self.exclusive_arg} is exclusive; other arguments are not allowed."
             )
 
-        if self.required_args and not all(rarg in self.args for rarg in self.required_args):
+        if (
+            not self.exclusive_arg and self.required_args and
+            not all(rarg in self.args for rarg in self.required_args)
+        ):
             raise OAIErrorBadArgument(
                 f"Verb {self.verb} requires the arguments: {','.join(self.required_args)}"
             )

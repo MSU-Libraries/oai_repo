@@ -147,12 +147,11 @@ class DataInterface:
             identifier (str): a valid identifier string
             cursor (int): position in results to start from
         Returns:
-            A tuple of length 4:
+            A tuple of length 3:
              1. (list|None) List of setSpec strings or None if the repository does not support sets.
-             2. (int|None) A `cursor` to send with a `resumptionToken`,
                 or None if no `resuptionToken` is needed.
-             3. (int|None) The `completeListSize` to send with a `resumptionToken` or Null to not send.
-             4. (Any|None) An str()-able value which indicates the constant-ness of the complete
+             2. (int|None) The `completeListSize` to send with a `resumptionToken` or Null to not send.
+             3. (Any|None) An str()-able value which indicates the constant-ness of the complete
                 result set. If any value in the results changes, this value should also
                 change. A changed value will invalidate current `resumptionToken`s.
                 If None, the `resumptionToken`s will only invalidate based on
@@ -187,12 +186,11 @@ class DataInterface:
             filter_set (str): Include only identifers within the matching setSpec string.
             cursor (int): position in results to start retrieving from
         Returns:
-            A tuple of length 4:
+            A tuple of length 3:
              1. (list) Valid identifier strings for the repository, filtered appropriately.
-             2. (int|None) A `cursor` to send with a `resumptionToken`,
                 or None if no `resuptionToken` is needed.
-             3. (int|None) The `completeListSize` to send with a `resumptionToken` or Null to not send.
-             4. (Any|None) An str()-able value which indicates the constant-ness of the complete
+             2. (int|None) The `completeListSize` to send with a `resumptionToken` or Null to not send.
+             3. (Any|None) An str()-able value which indicates the constant-ness of the complete
                 result set. If any value in the results changes, this value should also
                 change. A changed value will invalidate current `resumptionToken`s.
                 If None, the `resumptionToken`s will only invalidate based on
