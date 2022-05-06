@@ -45,8 +45,8 @@ class OAIRequest:
             )
 
         if (
-            not self.exclusive_arg and self.required_args and
-            not all(rarg in self.args for rarg in self.required_args)
+            not (self.exclusive_arg and self.exclusive_arg in self.args) and
+            self.required_args and not all(rarg in self.args for rarg in self.required_args)
         ):
             raise OAIErrorBadArgument(
                 f"Verb {self.verb} requires the arguments: {','.join(self.required_args)}"

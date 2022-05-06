@@ -3,7 +3,7 @@ Handling OAI-PMH responses
 """
 from __future__ import annotations      # To use non-string type hinting; can remove in Python 3.11
 from typing import TYPE_CHECKING
-from datetime import datetime
+from datetime import datetime, timezone
 from lxml import etree
 if TYPE_CHECKING:                       # Prevent circular imports for type hinting
     from .request import OAIRequest
@@ -52,7 +52,7 @@ class OAIResponse:
         self.xmlr = etree.Element("OAI-PMH", nsmap=NSMAP_BASE)
         self.xmlr.set(*NSMAP_SCHEMA)
         # responseDate element
-        response_date = response_date if response_date else datetime.now()
+        response_date = response_date if response_date else datetime.now(timezone.utc)
         response_date_elem = etree.SubElement(self.xmlr, "responseDate")
         response_date_elem.text = response_date.replace(microsecond=0).isoformat() + "Z"
         # request element

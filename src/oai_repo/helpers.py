@@ -8,6 +8,7 @@ import requests
 import jsonpath_ng
 from lxml import etree
 from .exceptions import OAIRepoInternalException, OAIRepoExternalException
+from .transform import Transform
 
 def bytes_to_xml(bdata: bytes|BytesIO) -> etree._Element:
     """

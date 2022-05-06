@@ -60,10 +60,29 @@ pip install oai_repo
 ```
 
 ## Implementing the DataInterface Class
-TODO docs placeholder
+In order for `oai_repo` to function, you must defined a custom class that defines
+how to pull and process metadata for your repository. This custom class is of
+the type `oai_repo.DataInterface`.  
+
+TODO ToC for DataInterface methods and return classes
+
+TODO mkdocstrings for DataInterface
+
+TODO mkdocstrings for return classes:
+- oai_data.Identify
+- oai_data.MetadataFormat
+- oai_data.RecordHeader
+- oai_data.Set
 
 ## Available Helper Methods
-TODO docs placeholder
+To help in creating your custom `DataInterface` implementation, `oai_repo` comes
+with a number of helpers to assist.
+
+TODO ToC for helpers
+
+TODO mkdocstrings for helper functions
+
+TODO mkdocstrings for Transform class
 
 ### URL/Path Pairs
 To have the OAI repository load data dymanically, the config file allows for

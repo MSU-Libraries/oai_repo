@@ -2,7 +2,7 @@ import pytest
 import oai_repo
 from oai_repo.exceptions import (
     OAIErrorBadResumptionToken, OAIErrorCannotDisseminateFormat,
-    OAIErrorNoRecordsMatch, OAIErrorNoSetHierarchy
+    OAIErrorNoRecordsMatch, OAIErrorNoSetHierarchy, OAIErrorBadArgument
 )
 from .data_sets import DataWithSets
 
@@ -18,6 +18,11 @@ def test_ListIdentifiers():
     assert b"<identifier>oai:d.lib.msu.edu:ajpe_10</identifier>" in resp
     assert b"<setSpec>africana</setSpec>" in resp
     assert b'<resumptionToken cursor="0" completeListSize=' in resp
+
+    # No args
+    request = { 'verb': 'ListIdentifiers' }
+    with pytest.raises(OAIErrorBadArgument):
+        req = repo.create_request(request)
 
     # Filter set
     request = { 'verb': 'ListIdentifiers', 'metadataPrefix': 'oai_dc', "set": "vvl:idetroit" }

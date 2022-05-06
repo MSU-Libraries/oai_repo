@@ -45,7 +45,7 @@ class ListIdentifiersRequest(OAIRequest):
         self.filter_until = first_match("until", self.token.args, self.args)
         self.filter_set = first_match("set", self.token.args, self.args)
         self.metadata_prefix = first_match("metadataPrefix", self.token.args, self.args)
-        if not self.metadata_prefix:
+        if "resumptionToken" in self.args and not self.metadata_prefix:
             raise OAIErrorBadResumptionToken("The resumption token is not valid for given verb.")
 
 
@@ -55,7 +55,7 @@ class ListIdentifiersResponse(OAIResponse):
         """Response body"""
         mdformats = self.repository.data.get_metadata_formats()
         if self.request.metadata_prefix not in [mdf.metadata_prefix for mdf in mdformats]:
-            raise OAIErrorCannotDisseminateFormat("metadataFormat not suported by this repository")
+            raise OAIErrorCannotDisseminateFormat("The given metadataPrefix not suported by this repository")
 
         cursor = (
             self.request.token.cursor + self.repository.data.limit
