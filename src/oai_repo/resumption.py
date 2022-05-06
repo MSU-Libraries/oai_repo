@@ -7,8 +7,8 @@ from datetime import datetime, timezone
 from hashlib import blake2s
 from urllib.parse import urlencode, parse_qs
 from lxml import etree
-from oai_repo import helpers
-from oai_repo.exceptions import OAIErrorBadResumptionToken
+from . import helpers
+from .exceptions import OAIErrorBadResumptionToken
 
 
 class ResumptionToken:
