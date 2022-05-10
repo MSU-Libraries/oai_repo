@@ -1,3 +1,4 @@
+from datetime import datetime
 from lxml import etree
 import pytest
 import oai_repo
@@ -39,9 +40,12 @@ def test_IdentifyResponse():
     # earliestDatestamp: static
     repo = oai_repo.OAIRepository(DataWithSets())
     req = { 'verb': 'Identify' }
-    resp = repo.process(req)
-    assert b"<repositoryName>My OAI Repo</repositoryName>" in bytes(resp)
-    assert b"<earliestDatestamp>2000-01-31</earliestDatestamp>" in bytes(resp)
+    rawresp = repo.process(req)
+    resp = bytes(rawresp)
+    assert b"<repositoryName>My OAI Repo</repositoryName>" in resp
+    assert b"<earliestDatestamp>2000-01-31</earliestDatestamp>" in resp
+    rstamp = rawresp.xpath("//responseDate/text()")[0]
+    assert datetime.strptime(rstamp, "%Y-%m-%dT%H:%M:%SZ")
 
     # Passing an unwanted arg
     request = { 'verb': 'Identify', 'arg': 'unwanted' }

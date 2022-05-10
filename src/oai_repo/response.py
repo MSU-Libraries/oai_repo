@@ -5,6 +5,7 @@ from __future__ import annotations      # To use non-string type hinting; can re
 from typing import TYPE_CHECKING
 from datetime import datetime, timezone
 from lxml import etree
+from .helpers import datestamp_long
 if TYPE_CHECKING:                       # Prevent circular imports for type hinting
     from .request import OAIRequest
     from .repository import OAIRepository
@@ -54,7 +55,7 @@ class OAIResponse:
         # responseDate element
         response_date = response_date if response_date else datetime.now(timezone.utc)
         response_date_elem = etree.SubElement(self.xmlr, "responseDate")
-        response_date_elem.text = response_date.replace(microsecond=0).isoformat() + "Z"
+        response_date_elem.text = datestamp_long(response_date)
         # request element
         request_elem = etree.SubElement(self.xmlr, "request")
         request_elem.text = self.repository.data.get_identify().base_url

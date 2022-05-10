@@ -115,7 +115,7 @@ class IdentifyResponse(OAIResponse):
         xmlb = etree.Element("Identify")
         repository_name = etree.SubElement(xmlb, "repositoryName")
         repository_name.text = identify.repository_name
-        baseurl = etree.SubElement(xmlb, "baseUrl")
+        baseurl = etree.SubElement(xmlb, "baseURL")
         baseurl.text = identify.base_url
         protocol_version = etree.SubElement(xmlb, "protocolVersion")
         protocol_version.text = identify.protocol_version

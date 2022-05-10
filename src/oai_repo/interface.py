@@ -150,7 +150,7 @@ class DataInterface:
             A tuple of length 3:
              1. (list|None) List of setSpec strings or None if the repository does not support sets.
                 or None if no `resuptionToken` is needed.
-             2. (int|None) The `completeListSize` to send with a `resumptionToken` or Null to not send.
+             2. (int|None) The `completeListSize` for a `resumptionToken` or Null to not send.
              3. (Any|None) An str()-able value which indicates the constant-ness of the complete
                 result set. If any value in the results changes, this value should also
                 change. A changed value will invalidate current `resumptionToken`s.
@@ -189,7 +189,7 @@ class DataInterface:
             A tuple of length 3:
              1. (list) Valid identifier strings for the repository, filtered appropriately.
                 or None if no `resuptionToken` is needed.
-             2. (int|None) The `completeListSize` to send with a `resumptionToken` or Null to not send.
+             2. (int|None) The `completeListSize` for a `resumptionToken` or Null to not send.
              3. (Any|None) An str()-able value which indicates the constant-ness of the complete
                 result set. If any value in the results changes, this value should also
                 change. A changed value will invalidate current `resumptionToken`s.
