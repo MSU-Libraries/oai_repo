@@ -20,10 +20,10 @@ class Identify(IdentifyValidator):
     repository_name: str = None
     base_url: str = None
     admin_email: list = field(default_factory=list)
+    earliest_datestamp: str|datetime = None
     deleted_record: str = None
     granularity: str = None
     compression: list = field(default_factory=list)
-    earliest_datestamp: str|datetime = None
     """earliest_datestamp: either a string in the granularity format, or a datetime object"""
     description: list[BytesIO|bytes|lxml.etree._Element] = field(default_factory=list)
     """description: can be bytes data or a pre-loaded lxml Element"""

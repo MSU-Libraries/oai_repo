@@ -122,6 +122,11 @@ class IdentifyResponse(OAIResponse):
         for email in identify.admin_email:
             adminemail = etree.SubElement(xmlb, "adminEmail")
             adminemail.text = email
+        edvalue = identify.earliest_datestamp
+        if not isinstance(edvalue, str):
+            edvalue = granularity_format(granularity, edvalue)
+        earliestdatestamp = etree.SubElement(xmlb, "earliestDatestamp")
+        earliestdatestamp.text = edvalue
         deletedrecord = etree.SubElement(xmlb, "deletedRecord")
         deletedrecord.text = identify.deleted_record
         granularity = etree.SubElement(xmlb, "granularity")
@@ -129,11 +134,6 @@ class IdentifyResponse(OAIResponse):
         for compress_type in identify.compression:
             compression = etree.SubElement(xmlb, "compression")
             compression.text = compress_type
-        edvalue = identify.earliest_datestamp
-        if not isinstance(edvalue, str):
-            edvalue = granularity_format(granularity, edvalue)
-        earliestdatestamp = etree.SubElement(xmlb, "earliestDatestamp")
-        earliestdatestamp.text = edvalue
         for desc in identify.description:
             desc_elem = etree.SubElement(xmlb, "description")
             desc_elem.append(bytes_to_xml(desc))
