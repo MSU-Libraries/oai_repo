@@ -18,11 +18,12 @@ setuptools.setup(
     url='https://github.com/MSU-Libraries/oai_repo',
     classifiers=[
         'Intended Audience :: Developers',
-        'Development Status :: 2 - Pre-Alpha',
+        'Development Status :: 4 - Beta',
         'License :: OSI Approved :: Apache Software License',
         'Operating System :: OS Independent',
         'Programming Language :: Python',
         'Programming Language :: Python :: 3',
+        'Programming Language :: Python :: 3.10',
     ],
     package_dir={"": "src"},
     packages=setuptools.find_packages(where="src"),
