@@ -55,8 +55,9 @@ GitHub Release:
     - rm -rf oai_repo.git
     - git clone --mirror https://gitlab-ci-token:${CI_JOB_TOKEN}@gitlab.msu.edu/msu-libraries/repo-team/oai_repo.git
     - cd oai_repo.git
+    # This will trigger the GitHub CI to build the MkDocs and update its gh-pages branch
     - git push --force --mirror https://MSU-Libraries:${GITHUB_USER_TOKEN}@github.com/MSU-Libraries/oai_repo.git
-    # Update the GitHub Pages branch
     - sleep 30 # Needs time to propagate the changes first or this next step will fail
+    # Next we have to re-configure the Pages settings to set gh-pages as the branch again
     - echo "{\"source\":{\"path\":\"/\", \"branch\":\"gh-pages\"}" > data.json
     - "curl -X POST -H 'Accept: application/vnd.github.v3+json' -u $GITHUB_USER_TOKEN https://api.github.com/repos/MSU-Libraries/oai_repo/pages -d '@data.json'"
