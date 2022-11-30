@@ -1,9 +1,12 @@
 from datetime import datetime, timezone
+import os
 import pytest
 from lxml import etree
 from oai_repo.resumption import ResumptionToken
 
 def test_ResumptionToken():
+    os.environ['TZ'] = 'America/Detroit'
+
     r1 = ResumptionToken()
     r2 = ResumptionToken()
     assert r1.create() == b""
