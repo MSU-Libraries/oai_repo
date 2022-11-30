@@ -49,15 +49,11 @@ GitHub Release:
     - job: Build Docs for GitLab
       artifacts: true
   before_script:
-    - apk add openssh-client git curl
-    - eval $( ssh-agent -s )
-    - install -d -m 700 ~/.ssh/
-    - ( umask 022; touch ~/.ssh/known_hosts )
-    - ssh-keyscan gitlab.msu.edu >> ~/.ssh/known_hosts
+    - apk add git curl
   script:
     # Update GitHub code
     - rm -rf oai_repo.git
-    - git clone --mirror git@gitlab.msu.edu:msu-libraries/repo-team/oai_repo.git
+    - git clone --mirror https://gitlab-ci-token:${CI_JOB_TOKEN}@gitlab.msu.edu/msu-libraries/repo-team/oai_repo.git
     - cd oai_repo.git
     - git push --force --mirror https://${GITHUB_USER_TOKEN}@github.com/MSU-Libraries/oai_repo.git
     # Update the GitHub Pages branch
