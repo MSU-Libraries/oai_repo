@@ -49,7 +49,11 @@ GitHub Release:
     - job: Build Docs for GitLab
       artifacts: true
   before_script:
-    - apk add curl git openssh-client
+    - apk add openssh-client git curl
+    - eval $( ssh-agent -s )
+    - install -d -m 700 ~/.ssh/
+    - ( umask 022; touch ~/.ssh/known_hosts )
+    - ssh-keyscan github.com >> ~/.ssh/known_hosts
   script:
     # Update GitHub code
     - rm -rf oai_repo.git
