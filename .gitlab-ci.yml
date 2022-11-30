@@ -23,7 +23,7 @@ Build Docs for GitLab:
   stage: Build
   tags:
     - msul-docker
-  image: python:latest
+  image: python:3.10
   only:
     - master
   except:
