@@ -36,14 +36,29 @@ VERBS = {
 
 class OAIRepository:
     """
-    The primary OAI repository class which loads the config and handles OAI requests
+    The primary OAI repository class which processes requests and
+    returns responses.
     """
     def __init__(self, data: DataInterface):
+        """
+        Initialize OAIRepository by passing in an implementation of
+        the DataInterface class.
+        Args:
+            data (DataInterface): The implemented data class
+        """
         self.data = data
 
     def process(self, request: dict) -> OAIResponse:
         """
-        Given a request, route to appropriate action and return a response
+        Given request arguments, route to appropriate action, process the
+        request and return a response.
+        Args:
+            request (dict): The request arguments
+        Returns:
+            An completed OAIResponse
+        Raises:
+            OAIRepoInternalException: When response generation fails due to code or API misconfiguration.
+            OAIRepoExternalException: When response generation fails due to an external API call.
         """
         try:
             request = self.create_request(request)

@@ -66,31 +66,44 @@ class OAIResponse:
         self.xmlr.append(self.body())
 
     def __bool__(self):
-        """Default to this being a successful OAI response"""
+        """
+        Whether the OAIResponse represents a success or not.
+        Returns False if response is an OAIError.
+        Examples:
+        ```python
+        response = repo.process(args)
+        if not response:
+            print(f"The response is an OAIError.")
+        ```
+        """
         return True
 
     def body(self) -> etree.Element:
         """
-        Abstract method to generate OAI response body
-        returns:
-            lxml.etree.Element
+        Abstract method to generate OAI response body.
+        Returns:
+            lxml.etree.Element:
         """
         raise NotImplementedError("OAIResponse must implement the body() method.")
 
     def root(self) -> etree.Element:
         """
-        Return the lxml.etree root element
+        Return the root lxml.etree.Element.
         """
         return self.xmlr
 
     def xpath(self, query: str) -> etree.Element:
         """
-        Return results of an xpath query from the root element
+        Return results of an xpath query from the root element.
         """
         return self.xmlr.xpath(query)
 
     def __bytes__(self):
         """
-        Return the XML response as bytes including an XML header line
+        Return the XML response as bytes, including an XML header line.
+        ```python
+        response = repo.process(args)
+        xml_bytes = bytes(response)
+        ```
         """
         return XML_HEADER + etree.tostring(self.xmlr, pretty_print=True)
