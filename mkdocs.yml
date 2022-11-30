@@ -1,0 +1,44 @@
+site_name: oai_repo Module
+repo_url: https://github.com/MSU-Libraries/oai_repo
+repo_name: MSU-Libraries/oai_repo
+
+theme:
+  name: "material"
+  features:
+    - navigation.expand
+    - navigation.instant
+
+markdown_extensions:
+- admonition
+- pymdownx.highlight:
+    anchor_linenums: true
+- pymdownx.inlinehilite
+- pymdownx.snippets
+- pymdownx.superfences
+
+plugins:
+- search:
+- mkdocstrings:
+    watch: [src/oai_repo]
+    handlers:
+      python:
+        paths: [src]
+        selection:
+          docstring_style: google
+        rendering:
+          show_root_heading: true
+          show_source: false
+          heading_level: 3
+          line_length: 100
+          show_signature_annotations: true
+
+nav:
+- About: index.md
+- Quick Start:
+    - Installation: installation.md
+    - Simple Example: example.md
+- API Reference:
+    - Overview: overview.md
+    - Implementation Classes: implementation.md
+    - Helpers: helpers.md
+    - Exceptions: exceptions.md

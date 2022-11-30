@@ -14,8 +14,27 @@ from .listsets import SetValidator
 @dataclass
 class Identify(IdentifyValidator):
     """
-    The info needed for the Identify verb. In your OAIInterface.get_identify_instance() method
-    create an instance of this class, set appropriate data, and return it.
+    The info needed for the Identify verb. In your `DataInterface.get_identify_instance()`
+    method create an instance of this class, set appropriate data, and return it.
+    Attributes:
+        repository_name (str): The name of the OAI repository
+        base_url (str): the base url for this repository
+        admin_email (list): a list of email addresses, cannot be empty
+        earliest_datestamp (str|datetime): either a string in the granularity format, or a datetime object
+        deleted_record (str): OAI deleted record value, one of `no`, `persistent`, `transient`
+        granularity (str): OAI granularity, either `YYYY-MM-DDThh:mm:ssZ` or `YYYY-MM-DD`
+        compression (list): compression to be available (typically left empty)
+        description (list): can be bytes data or a pre-loaded lxml Element
+    Examples:
+    ```python
+    ident = oai_repo.Identify()
+    ident.repository_name = "My Repo"
+    ident.base_url = f"https://example.edu/oai"
+    ident.deleted_record = "no"
+    ident.granularity = "YYYY-MM-DDThh:mm:ssZ"
+    ident.compression = []
+    ... # remaining attributes
+    ```
     """
     repository_name: str = None
     base_url: str = None
@@ -24,15 +43,25 @@ class Identify(IdentifyValidator):
     deleted_record: str = None
     granularity: str = None
     compression: list = field(default_factory=list)
-    """earliest_datestamp: either a string in the granularity format, or a datetime object"""
     description: list[BytesIO|bytes|lxml.etree._Element] = field(default_factory=list)
-    """description: can be bytes data or a pre-loaded lxml Element"""
 
 @dataclass
 class MetadataFormat(MetadataFormatValidator):
     """
     Class to define fields necessary for an OAI metadata format. Your definition of the
-    OAIInterface.get_metadata_formats() method should return a list of these.
+    `DataInterface.get_metadata_formats()` method should return a list of these.
+    Attributes:
+        metadata_prefix (str): A metadataPrefix string
+        schema (str): The schema for the metadata
+        metadata_namespace (str): The namespace for the metadata
+    Examples:
+    ```python
+    mdf = oai_repo.MetadataFormat(
+        "oai_dc",
+        "http://www.openarchives.org/OAI/2.0/oai_dc.xsd",
+        "http://www.openarchives.org/OAI/2.0/oai_dc/"
+    )
+    ```
     """
     metadata_prefix: str = None
     schema: str = None
@@ -42,7 +71,12 @@ class MetadataFormat(MetadataFormatValidator):
 class RecordHeader(RecordHeaderValidator):
     """
     Class to define a record header for an identifier. Your definition of the
-    OAIInterface.get_record_header() method should one of these.
+    `DataInterface.get_record_header()` method should one of these.
+    Attributes:
+        identifier (str): The OAI identifier
+        datestamp (str|datetime): The datestamp for when this record was created or last modified
+        setspecs (list[str]): A list of setspec strings this recdord is part of
+        status (str): The optional OAI status
     """
     identifier: str = None
     datestamp: str|datetime = None
@@ -53,12 +87,15 @@ class RecordHeader(RecordHeaderValidator):
 class Set(SetValidator):
     """
     Class to define fields for an OAI set. Your definition of the
-    OAIInterface.get_metadata_formats() method should return a list of these.
+    `DataInterface.get_metadata_formats()` method should return a list of these.
+    Attributes:
+        spec (str): The setspec string
+        name (str): The name associated with the setspec
+        description (list): A list of lxml.etree.Elements to populate `<setDescription>` tags for the set.
     """
     spec: str = None
     name: str = None
     description: list = None
-    """A list of lxml.etree.Elements to populate `<setDescription>` tags for the set."""
 
 
 class DataInterface:
@@ -66,8 +103,10 @@ class DataInterface:
     Class in which all required OAI data retrieval actions must be implemented.
     The instantiated instance of this class is then passed to the
     OAI repository.
+    Attributes:
+        limit (int): Max number of results to return per request for
+                     ListSets, ListIdentifiers, ListRecords
     """
-    # Max number of results to return per request for: ListSets, ListIdentifiers, ListRecords
     limit: int = 50
 
     def get_identify(self) -> Identify:
@@ -95,10 +134,10 @@ class DataInterface:
         Args:
             identifier (str|None): An identifer string
         Returns:
-            A list of instantiated MetadataFormat objects with all properties set appropriately
-            to the identifer.
-            If identifier is None, then list of all possible MetadataFormat objects for the
-            entire repository.
+            A list of instantiated MetadataFormat objects with all properties
+                set appropriately to the identifer.
+                If identifier is None, then list of all possible MetadataFormat
+                objects for the entire repository.
         """
         raise NotImplementedError
 
@@ -121,7 +160,7 @@ class DataInterface:
             metadataprefix (str): A metadata prefix
         Returns:
             The lxml.etree.Element for the requested record metadata,
-            or None if record has no metadata for provided prefix.
+                or None if record has no metadata for provided prefix.
         Important:
             oai_repo will wrap the response with a `<metadata>` tag; do not add it yourself.
         """
@@ -148,6 +187,7 @@ class DataInterface:
             cursor (int): position in results to start from
         Returns:
             A tuple of length 3:
+
              1. (list|None) List of setSpec strings or None if the repository does not support sets.
                 or None if no `resuptionToken` is needed.
              2. (int|None) The `completeListSize` for a `resumptionToken` or Null to not send.
@@ -166,7 +206,7 @@ class DataInterface:
             setspec (str): a setSpec string
         Returns:
             The Set object with all properties set appropriately,
-            or None if the setspec is not valid or does not exist.
+                or None if the setspec is not valid or does not exist.
         """
         raise NotImplementedError
 
@@ -187,6 +227,7 @@ class DataInterface:
             cursor (int): position in results to start retrieving from
         Returns:
             A tuple of length 3:
+
              1. (list) Valid identifier strings for the repository, filtered appropriately.
                 or None if no `resuptionToken` is needed.
              2. (int|None) The `completeListSize` for a `resumptionToken` or Null to not send.

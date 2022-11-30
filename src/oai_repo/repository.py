@@ -69,27 +69,6 @@ class OAIRepository:
         """Given a request, create an appropriate OAI response object"""
         return VERBS[request.verb].response(self, request)
 
-    def identifier(self, localid: str) -> str:
-        """Convert from local id value to OAI identifier"""
-        return Transform(self.config.localid).reverse(localid)
-
-    def localid(self, identifier: str) -> str:
-        """Convert from OAI identifier to local id value"""
-        return Transform(self.config.localid).forward(identifier)
-
-    def localmetadataid(self, metadataprefix: str) -> str:
-        """Convert a metadataprefix into a local metadata id value"""
-        if metadataprefix not in [mdf["metadataPrefix"] for mdf in self.config.metadataformats]:
-            raise OAIErrorCannotDisseminateFormat(
-                "The requested metadataPrefix is not valid for "\
-                "either the given record or the repository."
-            )
-        return Transform(self.config.localmetadataid).forward(metadataprefix)
-
-    def setname(self, localsetname: str) -> str:
-        """Convert a local setname into an OAI setname value"""
-        return Transform(self.config.localsetname).forward(localsetname)
-
     def valid_date(self, datestr: str):
         """
         Parse an argument provided datestr into a datetime object;
