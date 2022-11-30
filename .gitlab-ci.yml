@@ -49,7 +49,7 @@ GitHub Release:
     - job: Build Docs for GitLab
       artifacts: true
   before_script:
-    - apk add curl
+    - apk add curl git
   script:
     # Update GitHub code
     - rm -rf oai_repo.git
