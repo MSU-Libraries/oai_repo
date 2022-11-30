@@ -55,7 +55,7 @@ GitHub Release:
     - rm -rf oai_repo.git
     - git clone --mirror https://gitlab-ci-token:${CI_JOB_TOKEN}@gitlab.msu.edu/msu-libraries/repo-team/oai_repo.git
     - cd oai_repo.git
-    - git push --force --mirror https://${GITHUB_USER_TOKEN}@github.com/MSU-Libraries/oai_repo.git
+    - git push --force --mirror https://MSU-Libraries:${GITHUB_USER_TOKEN}@github.com/MSU-Libraries/oai_repo.git
     # Update the GitHub Pages branch
     - sleep 30 # Needs time to propagate the changes first or this next step will fail
     - echo "{\"source\":{\"path\":\"/\", \"branch\":\"gh-pages\"}" > data.json
