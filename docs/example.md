@@ -67,5 +67,5 @@ class MyOAIData(DataInterface):
 ```
 
 To have full OAI functionality, you will need to implement all the methods
-defined in the `DataInterface` class. Refer to the [Implementation Classes](implementation/)
+defined in the `DataInterface` class. Refer to the [Implementation Classes](../implementation/)
 documentation for more information.
