@@ -6,7 +6,7 @@ with a number of helpers to assist with common problems.
 ## Helper Functions
 
 ::: oai_repo.helpers
-    rendering:
+    options:
       show_root_full_path: false
       show_root_heading: false
       show_root_toc_entry: false
@@ -14,7 +14,7 @@ with a number of helpers to assist with common problems.
 ## Transfrorm Class
 
 ::: oai_repo.transform
-    rendering:
+    options:
       show_root_full_path: false
       show_root_heading: false
       show_root_toc_entry: false

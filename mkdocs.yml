@@ -16,16 +16,17 @@ markdown_extensions:
 - pymdownx.snippets
 - pymdownx.superfences
 
+watch:
+- src/oai_repo
+
 plugins:
 - search:
 - mkdocstrings:
-    watch: [src/oai_repo]
     handlers:
       python:
         paths: [src]
-        selection:
+        options:
           docstring_style: google
-        rendering:
           show_root_heading: true
           show_source: false
           heading_level: 3

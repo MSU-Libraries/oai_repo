@@ -9,6 +9,7 @@ pip install oai_repo
 
 The following dependencies will automatically be installed:
 
+* Cerberus
 * jsonpath-ng
 * lxml
 * requests

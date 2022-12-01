@@ -9,14 +9,14 @@ The `oai_repo` Python module provides a configurable implementation of an
 * Easy to integrate within any Python application.
 
 ## Quick Start
-* [Installation](/installation.md)
-* [Simple Example](/example.md)
+* [Installation](installation/)
+* [Simple Example](example/)
 
 ## API Reference
-* [Overview](/overview.md)
-* [Implementation Classes](/implementation.md)
-* [Helpers](/helpers.md)
-* [Exceptions](/exceptions.md)
+* [Overview](overview/)
+* [Implementation Classes](implementation/)
+* [Helpers](helpers/)
+* [Exceptions](exceptions/)
 
 ## Author and License
 The `oai_repo` module was developed at the Michigan State University Libraries.

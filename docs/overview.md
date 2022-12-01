@@ -86,11 +86,11 @@ At this point, you can take the response data and return it to the client,
 or pass it back to whatever web framework you're using. That's it!
 
 Reference for `OAIRepository` and `OAIResponse` are below, but be sure to read
-through the [Implementation Classes](/implementation) documentation for
+through the [Implementation Classes](implementation/) documentation for
 insight on how to create your customized `DataInterface` class.
 
 ::: oai_repo.repository.OAIRepository
-    rendering:
+    options:
       show_root_full_path: false
       merge_init_into_class: true
       heading_level: 2
@@ -98,7 +98,7 @@ insight on how to create your customized `DataInterface` class.
        - "process"
 
 ::: oai_repo.repository.OAIResponse
-    rendering:
+    options:
       show_root_full_path: false
       heading_level: 2
       members:

@@ -3,7 +3,7 @@
 ## The `DataInterface` Class
 
 ::: oai_repo.interface.DataInterface
-    rendering:
+    options:
       show_root_full_path: false
       show_root_heading: false
       show_root_toc_entry: false
@@ -11,21 +11,21 @@
 ## Classes Returned by `DataInterface` Methods
 
 ### ::: oai_repo.interface.Identify
-    rendering:
+    options:
       show_root_full_path: false
       show_bases: false
 
 ### ::: oai_repo.interface.MetadataFormat
-    rendering:
+    options:
       show_root_full_path: false
       show_bases: false
 
 ### ::: oai_repo.interface.RecordHeader
-    rendering:
+    options:
       show_root_full_path: false
       show_bases: false
 
 ### ::: oai_repo.interface.Set
-    rendering:
+    options:
       show_root_full_path: false
       show_bases: false

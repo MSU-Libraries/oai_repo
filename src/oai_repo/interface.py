@@ -188,20 +188,20 @@ class DataInterface:
         Returns:
             A tuple of length 3:
 
-             1. (list|None) List of setSpec strings or None if the repository does not support sets.
-                or None if no `resuptionToken` is needed.
-             2. (int|None) The `completeListSize` for a `resumptionToken` or Null to not send.
-             3. (Any|None) An str()-able value which indicates the constant-ness of the complete
-                result set. If any value in the results changes, this value should also
-                change. A changed value will invalidate current `resumptionToken`s.
-                If None, the `resumptionToken`s will only invalidate based on
-                reduction in in `completeListSize`.
+                1. (list|None) List of setSpec strings or None if the repository does not support
+                    sets, or None if no `resuptionToken` is needed.
+                2. (int|None) The `completeListSize` for a `resumptionToken` or Null to not send.
+                3. (Any|None) An str()-able value which indicates the constant-ness of the complete
+                    result set. If any value in the results changes, this value should also
+                    change. A changed value will invalidate current `resumptionToken`s.
+                    If None, the `resumptionToken`s will only invalidate based on
+                    reduction in in `completeListSize`.
         """
         raise NotImplementedError
 
     def get_set(self, setspec: str) -> Set:
         """
-        Return an instatiated OAI Set object for the provided setSpect string.
+        Return an instatiated OAI Set object for the provided setSpec string.
         Args:
             setspec (str): a setSpec string
         Returns:
@@ -228,13 +228,13 @@ class DataInterface:
         Returns:
             A tuple of length 3:
 
-             1. (list) Valid identifier strings for the repository, filtered appropriately.
-                or None if no `resuptionToken` is needed.
-             2. (int|None) The `completeListSize` for a `resumptionToken` or Null to not send.
-             3. (Any|None) An str()-able value which indicates the constant-ness of the complete
-                result set. If any value in the results changes, this value should also
-                change. A changed value will invalidate current `resumptionToken`s.
-                If None, the `resumptionToken`s will only invalidate based on
-                reduction in in `completeListSize`.
+                1. (list) Valid identifier strings for the repository, filtered appropriately,
+                    or None if no `resuptionToken` is needed.
+                2. (int|None) The `completeListSize` for a `resumptionToken` or Null to not send.
+                3. (Any|None) An str()-able value which indicates the constant-ness of the complete
+                    result set. If any value in the results changes, this value should also
+                    change. A changed value will invalidate current `resumptionToken`s.
+                    If None, the `resumptionToken`s will only invalidate based on
+                    reduction in in `completeListSize`.
         """
         raise NotImplementedError
