@@ -1,9 +1,10 @@
 .coverage
 report.xml
 __pycache__
-*.swp
+*.sw?
 build/
 dist/
+env/
 oai_repo.egg-info/
 .coverage
 FIXME
