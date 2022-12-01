@@ -18,10 +18,7 @@ setuptools.setup(
     url='https://github.com/MSU-Libraries/oai_repo',
     project_urls={
         "Documentation": "https://msu-libraries.github.io/oai_repo/",
-    }
-    project_urls =
-    Donate = https://palletsprojects.com/donate
-    Documentation = https://flask.palletsprojects.com/
+    },
     classifiers=[
         'Intended Audience :: Developers',
         'Development Status :: 4 - Beta',
