@@ -60,4 +60,4 @@ GitHub Release:
     - sleep 120 # Needs time to propagate the changes first or this next step will fail
     # Next we have to re-configure the Pages settings to set gh-pages as the branch again
     - echo '{"build_type":"legacy","source":{"branch":"gh-pages","path":"/"}' > data.json
-    - "curl -X POST -H 'Accept: application/vnd.github+json' -H 'Authorization: token ${GITHUB_USER_TOKEN}' https://api.github.com/repos/MSU-Libraries/oai_repo/pages -d '@data.json'"
+    - "curl -X POST -H 'Accept: application/vnd.github+json' -H \"Authorization: token ${GITHUB_USER_TOKEN}\" https://api.github.com/repos/MSU-Libraries/oai_repo/pages -d '@data.json'"
