@@ -6,7 +6,7 @@ stages:
 Unit Testing and Linting:
   stage: Testing and Linting
   tags:
-    - msul-docker
+    - msul-shared
   image: python:3.10
   except:
     - tags
@@ -22,7 +22,7 @@ Unit Testing and Linting:
 Build Docs for GitLab:
   stage: Build
   tags:
-    - msul-docker
+    - msul-shared
   image: python:3.10
   only:
     - master
@@ -38,7 +38,7 @@ Build Docs for GitLab:
 GitHub Release:
   stage: Release
   tags:
-    - msul-docker
+    - msul-shared
   image: alpine:latest
   when: manual
   only:
