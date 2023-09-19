@@ -96,17 +96,18 @@ class OAIRepository:
                 or if date was not valid according to the repository
                 granularity.
         """
-        allowed_datefmts = ["%Y-%m-%d"]
-        if self.data.get_identify().granularity == "YYYY-MM-DDThh:mm:ssZ":
-            allowed_datefmts.append("%Y-%m-%dT%H:%M:%SZ")
+        allowed_datefmts = ["%Y-%m-%d", "%Y-%m-%dT%H:%M:%SZ"]
 
-        date = None
-        if datestr is not None:
+        if datestr is None:
+            return None
+
+        for datefmt in allowed_datefmts:
             try:
-                for datefmt in allowed_datefmts:
-                    date = datetime.strptime(datestr, datefmt).replace(tzinfo=timezone.utc)
+                date = datetime.strptime(datestr.strip(), datefmt).replace(tzinfo=timezone.utc)
+                return date
             except (TypeError, ValueError):
-                raise OAIErrorBadArgument(
+                continue
+
+        raise OAIErrorBadArgument(
                     "A date passed in not in a valid format. See Identify for granularity."
                 ) from None
-        return date
