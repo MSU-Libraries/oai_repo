@@ -15,6 +15,10 @@ class DataWithSets(oai_repo.DataInterface):
         { "replace": [":", "_"] }   # colons disallowed per OAI spec
     ])
 
+    def __init__(self, timestamp=False) -> None:
+        super().__init__()
+        self.timestamp = timestamp
+
     def localid(self, identifier):
         """Custom method to convert to localid"""
         return self.identifier_transform.forward(identifier)
@@ -41,7 +45,10 @@ class DataWithSets(oai_repo.DataInterface):
         ident.base_url = "https://d.lib.msu.edu/oai"
         ident.admin_email.append("oai@example.edu")
         ident.deleted_record = "no"
-        ident.granularity = "YYYY-MM-DD"
+        if self.timestamp:
+            ident.granularity = "YYYY-MM-DDThh:mm:ssZ"
+        else:
+            ident.granularity = "YYYY-MM-DD"
         ident.compression = []
         ident.earliest_datestamp = "2000-01-31"
         ident.description.append(

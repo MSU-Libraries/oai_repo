@@ -96,7 +96,10 @@ class OAIRepository:
                 or if date was not valid according to the repository
                 granularity.
         """
-        allowed_datefmts = ["%Y-%m-%d", "%Y-%m-%dT%H:%M:%SZ"]
+        allowed_datefmts = ["%Y-%m-%d"]
+
+        if self.data.get_identify().granularity == "YYYY-MM-DDThh:mm:ssZ":
+            allowed_datefmts.append("%Y-%m-%dT%H:%M:%SZ")
 
         if datestr is None:
             return None
