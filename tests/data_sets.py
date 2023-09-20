@@ -74,7 +74,7 @@ class DataWithSets(oai_repo.DataInterface):
         """
         localid = self.localid(identifier)
         idexists_api = {
-            "url": f"https://sandhill.lib.msu.edu/search.json?q=PID:\"{localid}\"&fl=fedora_datastreams_ms",
+            "url": f"https://d.lib.msu.edu/search.json?q=PID:\"{localid}\"&fl=fedora_datastreams_ms",
             "jsonpath": "$.response.docs[0]"
         }
         id_match = oai_repo.helpers.apicall_querypath(**idexists_api)
@@ -83,7 +83,7 @@ class DataWithSets(oai_repo.DataInterface):
     def get_metadata_formats(self, identifier: str|None = None):
         """
         Return a list of metadata prefixes for the identifier. If no identifier
-        identifieris passed, then list must contain all possible prefixes for the repository.
+        identifier is passed, then list must contain all possible prefixes for the repository.
         Args:
             identifier (str|None): A valid identifer string
         Returns:
@@ -108,7 +108,7 @@ class DataWithSets(oai_repo.DataInterface):
             return list(allowed_mdfs.values())
         localid = self.localid(identifier)
         metadataid_api = {
-            "url": f"https://sandhill.lib.msu.edu/search.json?q=PID:\"{localid}\"&fl=fedora_datastreams_ms",
+            "url": f"https://d.lib.msu.edu/search.json?q=PID:\"{localid}\"&fl=fedora_datastreams_ms",
             "jsonpath": "$.response.docs[0].fedora_datastreams_ms"
         }
         metadataid_match = oai_repo.helpers.apicall_querypath(**metadataid_api)
@@ -128,7 +128,7 @@ class DataWithSets(oai_repo.DataInterface):
         """
         localid = self.localid(identifier)
         lastmod_api = {
-            "url": f"https://sandhill.lib.msu.edu/search.json?q=PID:\"{localid}\"&fl=fgs_lastModifiedDate_dt",
+            "url": f"https://d.lib.msu.edu/search.json?q=PID:\"{localid}\"&fl=fgs_lastModifiedDate_dt",
             "jsonpath": "$.response.docs[0].fgs_lastModifiedDate_dt"
         }
         lastmod_match = oai_repo.helpers.apicall_querypath(**lastmod_api)
@@ -155,7 +155,7 @@ class DataWithSets(oai_repo.DataInterface):
         localid = self.localid(identifier)
         localmetadataid = self.localmetadataid(metadataprefix)
         getmetadata_api = {
-            "url": f"https://sandhill.lib.msu.edu/{localid}/{localmetadataid}/view"
+            "url": f"https://d.lib.msu.edu/{localid}/{localmetadataid}/view"
         }
         return oai_repo.helpers.apicall_getxml(**getmetadata_api)
 
@@ -193,7 +193,7 @@ class DataWithSets(oai_repo.DataInterface):
         pid_match = identifier[identifier.rfind(":")+1:].replace("_", "\\:") if identifier else "*\\:root"
         setspec_api = {
             "url": (
-                f"https://sandhill.lib.msu.edu/search.json?q=PID:{pid_match}&rows=99999"
+                f"https://d.lib.msu.edu/search.json?q=PID:{pid_match}&rows=99999"
                 "&fl=PID,collection_hierarchy&sort=PID%20asc&facet=false"
             ),
             "jsonpath": "$.response"
@@ -237,7 +237,7 @@ class DataWithSets(oai_repo.DataInterface):
             "dc.language", "dc.relation", "dc.coverage", "dc.rights"
         ]
         set_api = {
-            "url": f"https://sandhill.lib.msu.edu/search.json?q=PID:{pid_match}&rows=1&fl=fgs_label_s,{','.join(dcfields)}&facet=false",
+            "url": f"https://d.lib.msu.edu/search.json?q=PID:{pid_match}&rows=1&fl=fgs_label_s,{','.join(dcfields)}&facet=false",
             "jsonpath": "$.response.docs[0]"
         }
         set_resp = oai_repo.helpers.apicall_querypath(**set_api)
@@ -293,7 +293,7 @@ class DataWithSets(oai_repo.DataInterface):
                 reduction in in `completeListSize`.
         """
         identifier_url = (
-            f"https://sandhill.lib.msu.edu/search.json?q=-PID:*\\:root&rows={int(self.limit)}"
+            f"https://d.lib.msu.edu/search.json?q=-PID:*\\:root&rows={int(self.limit)}"
             f"&fl=PID&sort=PID asc&facet=false&start={int(cursor)}"
         )
         if filter_from or filter_until:

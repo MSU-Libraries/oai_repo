@@ -130,7 +130,7 @@ class DataInterface:
     def get_metadata_formats(self, identifier: str|None = None) -> list[MetadataFormat]:
         """
         Return a list of metadata prefixes for the identifier. If no identifier
-        identifieris passed, then list must contain all possible prefixes for the repository.
+        identifier is passed, then list must contain all possible prefixes for the repository.
         Args:
             identifier (str|None): An identifer string
         Returns:
