@@ -1,14 +1,13 @@
 # coding: utf-8
 import os
 import setuptools
-from src import oai_repo
 
 with open(os.path.join(os.path.dirname(__file__), 'README.md'), "r") as fh:
     readme = fh.read()
 
 setuptools.setup(
     name='oai_repo',
-    version=oai_repo.__version__,
+    version="0.4.0",
     license='Apache License 2.0',
     description='OAI-PMH Repository Server',
     long_description=readme,
