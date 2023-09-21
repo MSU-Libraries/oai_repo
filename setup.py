@@ -33,9 +33,9 @@ setuptools.setup(
     python_requires=">=3.10",
     install_requires=[
         "Cerberus >= 1.3",
-        "jsonpath-ng >= 1.5",
+        "jsonpath-ng >= 1.6",
         "lxml >= 4.9",
-        "requests >= 2.27",
-        "validators >= 0.18",
+        "requests >= 2.31",
+        "validators >= 0.22",
     ]
 )

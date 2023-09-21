@@ -1,7 +1,7 @@
 """
 OAI-PMH Repository
 """
-__version__ = "0.3.4"
+__version__ = "0.4.0"
 
 from .exceptions import OAIRepoException, OAIRepoInternalException, OAIRepoExternalException
 from .repository import OAIRepository
