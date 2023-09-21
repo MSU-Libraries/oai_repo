@@ -7,8 +7,6 @@ class Transform:
     Given a set of ordered transform rules, use them to transform a string forward
     either following those rules in order, apply rules in backward order to
     reverse the transformation.
-    Important:
-        Applying rules in reverse may not always return the original value!
     Args:
         rules (list): A list of rules in forward order. Each rule being a dict
                       with a single key describing the rule type, and a value which
@@ -36,6 +34,9 @@ class Transform:
     | `prefix`  | [`add`\\|`del`, `string`] | `["del", "oai:"]` (remove `:oai` from start of value) |
     | `suffix`  | [`add`\\|`del`, `string`] | `["add", ".id"]` (add `.id` to end of value)          |
     | `case`    | [`upper`\\|`lower`]       | `["upper"]` (convert value to upper case)             |
+
+    Important:
+        Applying rules in reverse may not always return the original value!
     """
     def __init__(self, rules: list):
         self.rules = rules
