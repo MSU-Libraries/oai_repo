@@ -9,37 +9,35 @@ class Transform:
     reverse the transformation.
     Important:
         Applying rules in reverse may not always return the original value!
+    Args:
+        rules (list): A list of rules in forward order. Each rule being a dict
+                      with a single key describing the rule type, and a value which
+                      is a list of arguments to that rule.
+    Examples:
+    ```python
+    rules = [
+        { "replace": [":", "_"] },
+        { "prefix": ["add", "oai:"] },
+        { "suffix": ["del", ".edu"] },
+        { "case": ["upper"] }
+    ]
+    val = "abcd:5678:example.edu"
+    tr = Transform(rules)
+    val = tr.forward(val)
+    # val is now "OAI:ABCD_5678_EXAMPLE"
+    val = tr.reverse(val)
+    # val is now "abcd:5678:example.edu" again
+    ```
+    **Rules:**
+
+    | Type      | Parameters               | Example                                                |
+    |-----------|--------------------------|--------------------------------------------------------|
+    | `replace` | [`find`, `replace_with`] | `[":", "_"]` (replace all `:` with `_`)                |
+    | `prefix`  | [`add`\\|`del`, `string`] | `["del", "oai:"]` (remove `:oai` from start of value) |
+    | `suffix`  | [`add`\\|`del`, `string`] | `["add", ".id"]` (add `.id` to end of value)          |
+    | `case`    | [`upper`\\|`lower`]       | `["upper"]` (convert value to upper case)             |
     """
     def __init__(self, rules: list):
-        """
-        Args:
-            rules (list): A list of rules in forward order. Each rule being a dict
-                with a single key describing the rule type, and a value which is
-                a list of arguments to that rule.
-        Examples:
-        ```python
-        rules = [
-            { "replace": [":", "_"] },
-            { "prefix": ["add", "oai:"] },
-            { "suffix": ["del", ".edu"] },
-            { "case": ["upper"] }
-        ]
-        val = "abcd:5678:example.edu"
-        tr = Transform(rules)
-        val = tr.forward(val)
-        # val is now "OAI:ABCD_5678_EXAMPLE"
-        val = tr.reverse(val)
-        # val is now "abcd:5678:example.edu" again
-        ```
-        **Rules:**
-
-        | Type      | Parameters               | Example                                                |
-        |-----------|--------------------------|--------------------------------------------------------|
-        | `replace` | [`find`, `replace_with`] | `[":", "_"]` (replace all `:` with `_`)                |
-        | `prefix`  | [`add`\\|`del`, `string`] | `["del", "oai:"]` (remove `:oai` from start of value) |
-        | `suffix`  | [`add`\\|`del`, `string`] | `["add", ".id"]` (add `.id` to end of value)          |
-        | `case`    | [`upper`\\|`lower`]       | `["upper"]` (convert value to upper case)             |
-        """
         self.rules = rules
 
     def forward(self, value):
