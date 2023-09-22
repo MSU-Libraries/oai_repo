@@ -7,6 +7,7 @@ from lxml import etree
 import validators
 from .request import OAIRequest
 from .response import OAIResponse
+from .exceptions import OAIRepoInternalException
 from .helpers import bytes_to_xml, granularity_format
 
 class IdentifyValidator:
@@ -109,7 +110,7 @@ class IdentifyResponse(OAIResponse):
         identify = self.repository.data.get_identify()
         errors = identify.errors()
         if errors:
-            raise OAIRepoInternalException("Invalid Identify instance: {errors}")
+            raise OAIRepoInternalException(f"Invalid Identify instance: {errors}")
 
         # Assemble the XML body
         xmlb = etree.Element("Identify")
