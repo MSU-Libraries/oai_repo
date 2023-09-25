@@ -35,12 +35,12 @@ class MetadataFormatValidator:
     def _schema_failures(self):
         """Return a list of schema failures"""
         return ["schema must be a valid URL"] \
-            if not validators.url(self.schema) else []
+            if not validators.url(self.schema, simple_host=True) else []
 
     def _metadata_namespace_failures(self):
         """Return a list of metadata_namespace failures"""
         return ["metadata_namespace must be a valid URL"] \
-            if not validators.url(self.metadata_namespace) else []
+            if not validators.url(self.metadata_namespace, simple_host=True) else []
 
 
 class ListMetadataFormatsRequest(OAIRequest):
