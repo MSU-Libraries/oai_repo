@@ -2,7 +2,6 @@
 Implementation of Identify verb
 """
 from datetime import datetime
-from io import BytesIO
 from lxml import etree
 import validators
 from .request import OAIRequest
@@ -25,7 +24,10 @@ class IdentifyValidator:
         failures = []
         if not self.repository_name or not isinstance(self.repository_name, str):
             failures.append("repository_name must be a non-empty string")
-        if not isinstance(self.base_url, str) or not validators.url(self.base_url, simple_host=True):
+        if (
+            not isinstance(self.base_url, str) or
+            not validators.url(self.base_url, simple_host=True)
+        ):
             failures.append("base_url must be a valid URL path")
         failures.extend(self._admin_email_failures())
         failures.extend(self._deleted_record_failures())

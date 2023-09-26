@@ -4,7 +4,7 @@ Implementation of ListSets verb
 from lxml import etree
 from .request import OAIRequest
 from .response import OAIResponse
-
+from .exceptions import OAIErrorNoSetHierarchy
 
 class SetValidator:
     """Validator for the Set class"""

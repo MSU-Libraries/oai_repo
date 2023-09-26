@@ -10,15 +10,12 @@ from .listmetadataformats import ListMetadataFormatsRequest, ListMetadataFormats
 from .listrecords import ListRecordsRequest, ListRecordsResponse
 from .listsets import ListSetsRequest, ListSetsResponse
 from .exceptions import (
-    OAIError, OAIErrorBadVerb, OAIErrorIdDoesNotExist,
-    OAIErrorCannotDisseminateFormat, OAIErrorBadArgument
+    OAIError, OAIErrorBadVerb, OAIErrorBadArgument
 )
 from .error import OAIErrorResponse
 from .request import OAIRequest
 from .response import OAIResponse
 from .interface import DataInterface
-
-from .transform import Transform
 
 class VerbClasses(NamedTuple):
     """Named access to verb classes"""
@@ -57,8 +54,8 @@ class OAIRepository:
         Returns:
             An completed OAIResponse
         Raises:
-            OAIRepoInternalException: When response generation fails due to code or API misconfiguration.
-            OAIRepoExternalException: When response generation fails due to an external API call.
+            OAIRepoInternalException: When resp creation fails due to code or API misconfiguration.
+            OAIRepoExternalException: When resp creation fails due to an external API call.
         """
         try:
             request = self.create_request(request)
@@ -112,5 +109,5 @@ class OAIRepository:
                 continue
 
         raise OAIErrorBadArgument(
-                    "A date passed in not in a valid format. See Identify for granularity."
-                ) from None
+            "A date passed in not in a valid format. See Identify for granularity."
+        ) from None

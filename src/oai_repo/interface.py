@@ -20,7 +20,7 @@ class Identify(IdentifyValidator):
         repository_name (str): The name of the OAI repository
         base_url (str): the base url for this repository
         admin_email (list): a list of email addresses, cannot be empty
-        earliest_datestamp (str|datetime): either a string in the granularity format, or a datetime object
+        earliest_datestamp (str|datetime): a string in the granularity format or a datetime object
         deleted_record (str): OAI deleted record value, one of `no`, `persistent`, `transient`
         granularity (str): OAI granularity, either `YYYY-MM-DDThh:mm:ssZ` or `YYYY-MM-DD`
         compression (list): compression to be available (typically left empty)
@@ -91,7 +91,8 @@ class Set(SetValidator):
     Attributes:
         spec (str): The setspec string
         name (str): The name associated with the setspec
-        description (list): A list of lxml.etree.Elements to populate `<setDescription>` tags for the set.
+        description (list): A list of lxml.etree.Elements to populate 
+                            `<setDescription>` tags for the set.
     """
     spec: str = None
     name: str = None

@@ -28,12 +28,12 @@ class Transform:
     ```
     **Rules:**
 
-    | Type      | Parameters               | Example                                                |
-    |-----------|--------------------------|--------------------------------------------------------|
-    | `replace` | [`find`, `replace_with`] | `[":", "_"]` (replace all `:` with `_`)                |
-    | `prefix`  | [`add`\\|`del`, `string`] | `["del", "oai:"]` (remove `:oai` from start of value) |
-    | `suffix`  | [`add`\\|`del`, `string`] | `["add", ".id"]` (add `.id` to end of value)          |
-    | `case`    | [`upper`\\|`lower`]       | `["upper"]` (convert value to upper case)             |
+    | Type      | Parameters               | Example                                              |
+    |-----------|--------------------------|------------------------------------------------------|
+    | `replace` | [`find`, `replace_with`] | `[":", "_"]` (replace all `:` with `_`)              |
+    | `prefix`  | [`add`\\|`del`, `string`] | `["del", "oai:"]` (remove `oai:` at start of value) |
+    | `suffix`  | [`add`\\|`del`, `string`] | `["add", ".id"]` (add `.id` to end of value)        |
+    | `case`    | [`upper`\\|`lower`]       | `["upper"]` (convert value to upper case)           |
 
     Important:
         Applying rules in reverse may not always return the original value!

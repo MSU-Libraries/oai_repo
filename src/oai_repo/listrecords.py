@@ -54,7 +54,9 @@ class ListRecordsResponse(OAIResponse):
         """Response body"""
         mdformats = self.repository.data.get_metadata_formats()
         if self.request.metadata_prefix not in [mdf.metadata_prefix for mdf in mdformats]:
-            raise OAIErrorCannotDisseminateFormat("The given metadataPrefix not suported by this repository")
+            raise OAIErrorCannotDisseminateFormat(
+                "The given metadataPrefix not suported by this repository"
+            )
 
         cursor = (
             self.request.token.cursor + self.repository.data.limit

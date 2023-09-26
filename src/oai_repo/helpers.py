@@ -9,7 +9,6 @@ import requests
 import jsonpath_ng
 from lxml import etree
 from .exceptions import OAIRepoInternalException, OAIRepoExternalException
-from .transform import Transform
 
 def bytes_to_xml(bdata: bytes|BytesIO) -> etree._Element:
     """
@@ -22,6 +21,7 @@ def bytes_to_xml(bdata: bytes|BytesIO) -> etree._Element:
     Raises:
         etree.XMLSyntaxError: On XML parse error
     """
+    # pylint: disable=protected-access
     if not isinstance(bdata, etree._Element):
         if isinstance(bdata, BytesIO):
             bdata.seek(0)
@@ -201,7 +201,7 @@ def apicall_querypath(
     if not jsonpath and not xpath:
         raise OAIRepoInternalException("apicall_querypath without a jsonpath or xpath provided.")
     if jsonpath and xpath:
-        raise OAIRepoInternalException("apicall_querypath without both jsonpath and xpath provided.")
+        raise OAIRepoInternalException("apicall_querypath with both jsonpath and xpath provided.")
 
     if url not in __APICALL_CACHE:
         try:
