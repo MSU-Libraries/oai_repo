@@ -14,7 +14,8 @@ from .exceptions import (
 class ListRecordsRequest(OAIRequest):
     """
     Parse a request for the ListRecords verb
-    raises:
+
+    Raises:
         OAIErrorBadArgument
         OAIErrorBadResumptionToken
         OAIErrorCannotDisseminateFormat

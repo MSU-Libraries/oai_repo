@@ -95,7 +95,8 @@ class IdentifyValidator:
 class IdentifyRequest(OAIRequest):
     """
     Parse a request for the Idenfify verb
-    raises:
+
+    Raises:
         OAIErrorBadArgument
     """
     def post_parse(self):

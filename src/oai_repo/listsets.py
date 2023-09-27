@@ -38,6 +38,7 @@ class SetValidator:
 class ListSetsRequest(OAIRequest):
     """
     Parse a request for the ListSets verb
+
     Raises:
         OAIErrorBadArgument
     """
@@ -54,6 +55,7 @@ class ListSetsRequest(OAIRequest):
 class ListSetsResponse(OAIResponse):
     """
     Generate a response for the ListSets verb
+
     Raises:
         OAIErrorBadResumptionToken
         OAIErrorNoSetHierarchy

@@ -16,6 +16,7 @@ class Identify(IdentifyValidator):
     """
     The info needed for the Identify verb. In your `DataInterface.get_identify_instance()`
     method create an instance of this class, set appropriate data, and return it.
+
     Attributes:
         repository_name (str): The name of the OAI repository
         base_url (str): the base url for this repository
@@ -25,7 +26,8 @@ class Identify(IdentifyValidator):
         granularity (str): OAI granularity, either `YYYY-MM-DDThh:mm:ssZ` or `YYYY-MM-DD`
         compression (list): compression to be available (typically left empty)
         description (list): can be bytes data or a pre-loaded lxml Element
-    Examples:
+
+    **Examples:**
     ```python
     ident = oai_repo.Identify()
     ident.repository_name = "My Repo"
@@ -50,11 +52,13 @@ class MetadataFormat(MetadataFormatValidator):
     """
     Class to define fields necessary for an OAI metadata format. Your definition of the
     `DataInterface.get_metadata_formats()` method should return a list of these.
+
     Attributes:
         metadata_prefix (str): A metadataPrefix string
         schema (str): The schema for the metadata
         metadata_namespace (str): The namespace for the metadata
-    Examples:
+
+    **Examples:**
     ```python
     mdf = oai_repo.MetadataFormat(
         "oai_dc",
@@ -72,6 +76,7 @@ class RecordHeader(RecordHeaderValidator):
     """
     Class to define a record header for an identifier. Your definition of the
     `DataInterface.get_record_header()` method should one of these.
+
     Attributes:
         identifier (str): The OAI identifier
         datestamp (str|datetime): The datestamp for when this record was created or last modified
@@ -88,6 +93,7 @@ class Set(SetValidator):
     """
     Class to define fields for an OAI set. Your definition of the
     `DataInterface.get_metadata_formats()` method should return a list of these.
+
     Attributes:
         spec (str): The setspec string
         name (str): The name associated with the setspec
@@ -104,6 +110,7 @@ class DataInterface:
     Class in which all required OAI data retrieval actions must be implemented.
     The instantiated instance of this class is then passed to the
     OAI repository.
+
     Attributes:
         limit (int): Max number of results to return per request for
                      ListSets, ListIdentifiers, ListRecords
@@ -113,6 +120,7 @@ class DataInterface:
     def get_identify(self) -> Identify:
         """
         Create and return an instantiated Identify object.
+
         Returns:
             The Identify object with all properties set appropriately
         """
@@ -121,8 +129,10 @@ class DataInterface:
     def is_valid_identifier(self, identifier: str) -> bool:
         """
         Determine if an identifier string is valid format and exists.
+
         Args:
             identifier (str): A string to check for being an identifier
+
         Returns:
             True if given string is an identifier that exists.
         """
@@ -132,8 +142,10 @@ class DataInterface:
         """
         Return a list of metadata prefixes for the identifier. If no identifier
         identifier is passed, then list must contain all possible prefixes for the repository.
+
         Args:
             identifier (str|None): An identifer string
+
         Returns:
             A list of instantiated MetadataFormat objects with all properties
                 set appropriately to the identifer.
@@ -145,8 +157,10 @@ class DataInterface:
     def get_record_header(self, identifier: str) -> RecordHeader:
         """
         Return a RecordHeader instance for the identifier.
+
         Args:
             identifier (str): A valid identifier string
+
         Returns:
             The RecordHeader object with all properties set appropriately.
         """
@@ -156,12 +170,15 @@ class DataInterface:
         """
         Return a lxml.etree.Element representing the root element of the
         metadata found for the given prefix.
+
         Args:
             identifier (str): A valid identifer string
             metadataprefix (str): A metadata prefix
+
         Returns:
             The lxml.etree.Element for the requested record metadata,
                 or None if record has no metadata for provided prefix.
+
         Important:
             oai_repo will wrap the response with a `<metadata>` tag; do not add it yourself.
         """
@@ -170,10 +187,13 @@ class DataInterface:
     def get_record_abouts(self, identifier: str) -> list[lxml.etree._Element]:
         """
         Return a list of XML elements which will populate the `<about>` tags in GetRecord responses.
+
         Args:
             identifier (str): A valid identifier string
+
         Returns:
             A list of lxml.etree.Elements to populate `<about>` tags for the record.
+
         Important:
             oai_repo will wrap the response with a `<about>` tag; do not add it yourself.
         """
@@ -183,9 +203,11 @@ class DataInterface:
         """
         Return a list of setSpec string for the given identifier string if provided,
         or the list of all valid setSpec strings for the repository if no identifier is None.
+
         Args:
             identifier (str): a valid identifier string
             cursor (int): position in results to start from
+
         Returns:
             A tuple of length 3:
 
@@ -203,8 +225,10 @@ class DataInterface:
     def get_set(self, setspec: str) -> Set:
         """
         Return an instatiated OAI Set object for the provided setSpec string.
+
         Args:
             setspec (str): a setSpec string
+
         Returns:
             The Set object with all properties set appropriately,
                 or None if the setspec is not valid or does not exist.
@@ -220,12 +244,14 @@ class DataInterface:
     ) -> tuple:
         """
         Return valid identifier strings, filtered appropriately to passed parameters.
+
         Args:
             metadataprefix (str): The metadata prefix to match.
             filter_from (datetime.datetime): Include only identifiers on or after given datetime.
             filter_until (datetime.datetime): Include only identifiers on or before given datetime.
             filter_set (str): Include only identifers within the matching setSpec string.
             cursor (int): position in results to start retrieving from
+
         Returns:
             A tuple of length 3:
 

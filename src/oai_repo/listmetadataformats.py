@@ -46,7 +46,8 @@ class MetadataFormatValidator:
 class ListMetadataFormatsRequest(OAIRequest):
     """
     Parse a request for the ListMetadataFormats verb
-    raises:
+
+    Raises:
         OAIErrorBadArgument
     """
     def __init__(self):
@@ -66,7 +67,8 @@ class ListMetadataFormatsRequest(OAIRequest):
 class ListMetadataFormatsResponse(OAIResponse):
     """
     Generate a resposne for the ListMetadataFormats verb
-    raises:
+
+    Raises:
         OAIErrorIdDoesNotExist
         OAIErrorNoMetadataFormats
     """

@@ -15,7 +15,8 @@ from .exceptions import (
 class ListIdentifiersRequest(OAIRequest):
     """
     Parse a request for the ListIdentifiersResponse verb
-    raises:
+
+    Raises:
         OAIErrorBadArgument
         OAIErrorBadResumptionToken
         OAIErrorCannotDisseminateFormat

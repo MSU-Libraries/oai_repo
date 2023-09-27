@@ -7,11 +7,13 @@ class Transform:
     Given a set of ordered transform rules, use them to transform a string forward
     either following those rules in order, apply rules in backward order to
     reverse the transformation.
+
     Args:
         rules (list): A list of rules in forward order. Each rule being a dict
                       with a single key describing the rule type, and a value which
                       is a list of arguments to that rule.
-    Examples:
+
+    **Examples:**
     ```python
     rules = [
         { "replace": [":", "_"] },
@@ -26,6 +28,7 @@ class Transform:
     val = tr.reverse(val)
     # val is now "abcd:5678:example.edu" again
     ```
+
     **Rules:**
 
     | Type      | Parameters               | Example                                              |

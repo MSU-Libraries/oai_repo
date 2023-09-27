@@ -40,6 +40,7 @@ class OAIRepository:
         """
         Initialize OAIRepository by passing in an implementation of
         the DataInterface class.
+
         Args:
             data (DataInterface): The implemented data class
         """
@@ -49,10 +50,13 @@ class OAIRepository:
         """
         Given request arguments, route to appropriate action, process the
         request and return a response.
+
         Args:
             request (dict): The request arguments
+
         Returns:
             An completed OAIResponse
+
         Raises:
             OAIRepoInternalException: When resp creation fails due to code or API misconfiguration.
             OAIRepoExternalException: When resp creation fails due to an external API call.
@@ -84,10 +88,13 @@ class OAIRepository:
     def valid_date(self, datestr: str):
         """
         Parse an argument provided datestr into a datetime object;
+
         Args:
             datestr (str|None): An unvalidated date string
+
         Returns:
             A datetime.datetime object, or None if datestr was None.
+
         Raises:
             OAIErrorBadArgument If an invalid date is passed
                 or if date was not valid according to the repository

@@ -14,10 +14,13 @@ def bytes_to_xml(bdata: bytes|BytesIO) -> etree._Element:
     """
     Given a bytes or BytesIO, parse and return an lxml.etree._Element.
     If passed an lxml.etree._Element, then will return it unchanged.
+
     Args:
         bdata (bytes|BytesIO): The bytes data to parse
+
     Returns:
         The loaded XML element.
+
     Raises:
         etree.XMLSyntaxError: On XML parse error
     """
@@ -32,11 +35,14 @@ def bytes_to_xml(bdata: bytes|BytesIO) -> etree._Element:
 def datestamp_short(timestamp: datetime) -> str:
     """
     Convert a datetime to short form datestamp: YYYY-MM-DD
+
     Args:
         timestamp (datetime): A Python datetime
+
     Returns:
         A short granularity formatted date string
-    Examples:
+
+    **Examples:**
     ```python
     from datetime import datetime
     from oai_repo import helpers
@@ -49,11 +55,14 @@ def datestamp_short(timestamp: datetime) -> str:
 def datestamp_long(timestamp: datetime) -> str:
     """
     Convert a datetime to long form datestamp: YYYY-MM-DDThh:mm:ssZ
+
     Args:
         timestamp (datetime): A Python datetime
+
     Returns:
         A long granularity formatted date string
-    Examples:
+
+    **Examples:**
     ```python
     from datetime import datetime
     from oai_repo import helpers
@@ -66,12 +75,15 @@ def datestamp_long(timestamp: datetime) -> str:
 def granularity_format(granularity: str, timestamp: datetime) -> str:
     """
     Format a timestamp according to the OAI granularity and return it.
+
     Args:
         granularity (str): The granularity from OAI (either `YYYY-MM-DDThh:mm:ssZ` or `YYYY-MM-DD`)
         timestamp (datetime): A Python datetime
+
     Returns:
         A granularity formatted date string appropriate to the granularity passed in
-    Examples:
+
+    **Examples:**
     ```python
     from datetime import datetime
     from oai_repo import helpers
@@ -85,14 +97,18 @@ def granularity_format(granularity: str, timestamp: datetime) -> str:
 def jsonpath_find(data: dict|list, path: str) -> list:
     """
     Get all matching values for a given JSONPath.
+
     Args:
         data (dict|list): The already loaded JSON data
         path (str): The JSONPath to find
+
     Returns:
         A list of matching values
+
     Raises:
         jsonpath_ng.exceptions.JSONPathError: On jsonpath failure
-    Examples:
+
+    **Examples:**
     ```python
     ids = helpers.jsonpath_find(loaded_json, '$.docs[*].id')
     ```
@@ -104,14 +120,18 @@ def jsonpath_find(data: dict|list, path: str) -> list:
 def jsonpath_find_first(data: dict|list, path: str) -> any:
     """
     Get the first matching value for a given JSONPath
+
     Args:
         data (dict|list): The already loaded JSON data
         path (str): The JSONPath to find
+
     Returns:
         The matched value, or None if not found
+
     Raises:
         jsonpath_ng.exceptions.JSONPathError: On jsonpath failure
-    Examples:
+
+    **Examples:**
     ```python
     first_id = helpers.jsonpath_find_first(loaded_json, '$.docs[*].id')
     ```
@@ -122,14 +142,18 @@ def jsonpath_find_first(data: dict|list, path: str) -> any:
 def xpath_find(xmlr: etree.Element, path: str) -> list:
     """
     Get matching values for a given XPath
+
     Args:
         xmlr (lxml.etree.Element): The root xml object to query
         path (str): The xpath query
+
     Returns:
         A list of matching values
+
     Raises:
         lxml.etree.XPathError: On xpath failure
-    Examples:
+
+    **Examples:**
     ```python
     ids = helpers.xpath_find(loaded_xml, "/response/result/doc/str[name=id]/text()")
     ```
@@ -139,14 +163,18 @@ def xpath_find(xmlr: etree.Element, path: str) -> list:
 def xpath_find_first(xmlr: etree.Element, path: str) -> any:
     """
     Get the first matching value for a given XPath
+
     Args:
         xmlr (lxml.etree.Element): The root xml object to query
         path (str): The xpath query
+
     Returns:
         The matched value, or None if not found
+
     Raises:
         lxml.etree.XPathError: On xpath failure
-    Examples:
+
+    **Examples:**
     ```python
     first_id = helpers.xpath_find_first(loaded_xml, "/response/result/doc/str[name=id]/text()")
     ```
@@ -169,18 +197,22 @@ def apicall_querypath(
     _API call results are cached while processing a single OAI request._  
     Subsequent calls to the same URL will used previous results,
     without resulting in an additional API call.
+
     Args:
         url (str): The URL to perform an API call to.
         jsonpath (str): A JSONPath query to run on the results from the URL  
                         (must be `None` if `xpath` is passed)
         xpath (str): An XPath query to run on the results from the URL  
                      (must be `None` if `jsonpath` is passed)
+
     Returns:
         The matching string value, or None if not found
+
     Raises:
         OAIRepoInternalException: on invalid URL, invalid query, or wrong API response type.
         OAIRepoExternalException: on API call failure, or a non-200 response.
-    Examples:
+
+    **Examples:**
     ```python
     # JSONPath
     earliest_api = {
@@ -235,14 +267,18 @@ def apicall_querypath(
 def apicall_getxml(url: str = None) ->  etree._Element:
     """
     Perform API call to a URL and load the response as XML.
+
     Args:
         url (str): A URL path to call.
+
     Returns:
         A lxml.etree._Element containing the root of the loaded XML.
+
     Raises:
         OAIRepoExternalException: when the URL call fails or returns non-200 response.
         OAIRepoInternalException: when call to URL does not return valid XML or no URL was provided.
-    Examples:
+
+    **Examples:**
     ```python
     loadedXml = helpers.apicall_getxml("https://api.example.edu/record/42")
     ```

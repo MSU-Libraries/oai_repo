@@ -69,7 +69,8 @@ class OAIResponse:
         """
         Whether the OAIResponse represents a success or not.
         Returns False if response is an OAIError.
-        Examples:
+
+        **Examples:**
         ```python
         response = repo.process(args)
         if not response:
@@ -81,6 +82,7 @@ class OAIResponse:
     def body(self) -> etree.Element:
         """
         Abstract method to generate OAI response body.
+
         Returns:
             lxml.etree.Element:
         """

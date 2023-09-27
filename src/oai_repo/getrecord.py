@@ -47,7 +47,8 @@ class RecordHeaderValidator:
 class GetRecordRequest(OAIRequest):
     """
     Parse a request for the GetRecord verb
-    raises:
+
+    Raises:
         OAIErrorBadArgument
     """
     def __init__(self):
@@ -68,7 +69,8 @@ class GetRecordRequest(OAIRequest):
 class GetRecordResponse(OAIResponse):
     """
     Generate a resposne for the GetRecord verb
-    raises:
+
+    Raises:
         OAIErrorIdDoesNotExist
         OAIErrorCannotDisseminateFormat
     """
@@ -96,10 +98,12 @@ class GetRecordResponse(OAIResponse):
 def header(repository: "OAIRepository", identifier: str, xmlb: etree._Element):
     """
     Generate and append a <header> OAI element to and XML doc.
+
     Args:
         repository (OAIRepository): An instantiated repository class
         identifier (str): A valid identifier string
         xmlb (lxml.etree._Element): The element to add the header to
+
     Returns:
         A lxml.etree._Element for the root of the header
     """
@@ -119,10 +123,12 @@ def header(repository: "OAIRepository", identifier: str, xmlb: etree._Element):
 def record(repository: "OAIRepository", identifier: str, metadataprefix: str, xmlb: etree._Element):
     """
     Generate and append a <record> OAI element to and XML doc.
+
     Args:
         repository (OAIRepository): An instantiated repository class
         identifier (str): A valid identifier string
         xmlb (lxml.etree._Element): The element to add the header to
+
     Returns:
         A lxml.etree._Element for the root of the header
     """

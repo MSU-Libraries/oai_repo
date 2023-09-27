@@ -31,6 +31,7 @@ class OAIRequest:
     def parse(self, args: dict):
         """
         Parse arguments for the request.
+
         Raises:
             OAIErrorBadArgument
         """

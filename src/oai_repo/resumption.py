@@ -34,6 +34,7 @@ class ResumptionToken:
     def state_hash(self):
         """
         Get a hash of the state
+
         Returns:
             The hexhash as a string, or None if no state was set
         """
@@ -42,6 +43,7 @@ class ResumptionToken:
     def set_state(self, state: str):
         """
         Set the state hash from the provided state
+
         Args:
             state (str): The unqiue state, a string or an object that can be converted to a unique
                          string using __str__
@@ -60,9 +62,11 @@ class ResumptionToken:
     def xml(self, limit: int) -> etree._Element:
         """
         Return a formed xml element for the token
+
         Args:
             limit (int): The limit number of elements tha can be returned.
                          Used to determine if the token string should be included.
+
         Returns:
             The formed XML for the token, or None if no token can be generated
         """
