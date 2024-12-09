@@ -103,9 +103,6 @@ def header(repository: "OAIRepository", identifier: str, xmlb: etree._Element):
         repository (OAIRepository): An instantiated repository class
         identifier (str): A valid identifier string
         xmlb (lxml.etree._Element): The element to add the header to
-
-    Returns:
-        A lxml.etree._Element for the root of the header
     """
     head = repository.data.get_record_header(identifier)
     xhead = etree.SubElement(xmlb, "header")
@@ -128,18 +125,16 @@ def record(repository: "OAIRepository", identifier: str, metadataprefix: str, xm
         repository (OAIRepository): An instantiated repository class
         identifier (str): A valid identifier string
         xmlb (lxml.etree._Element): The element to add the header to
-
-    Returns:
-        A lxml.etree._Element for the root of the header
     """
+    if not (recmeta := repository.data.get_record_metadata(identifier, metadataprefix)):
+        return
+
     xrec = etree.SubElement(xmlb, "record")
     # Header
     header(repository, identifier, xrec)
     # Metadata
     xmeta = etree.SubElement(xrec, "metadata")
-    xmeta.append(
-        repository.data.get_record_metadata(identifier, metadataprefix)
-    )
+    xmeta.append(recmeta)
     # About
     abouts = repository.data.get_record_abouts(identifier)
     for about in abouts:
