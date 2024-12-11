@@ -4,7 +4,7 @@ Implementation of ListIdentifiers verb
 from lxml import etree
 from .request import OAIRequest
 from .response import OAIResponse
-from .getrecord import header
+from .getrecord import add_header
 from .resumption import ResumptionToken
 from .exceptions import (
     OAIErrorNoRecordsMatch, OAIErrorBadResumptionToken,
@@ -73,6 +73,7 @@ class ListIdentifiersResponse(OAIResponse):
             cursor
         )
 
+        # TODO allow custom token invalidation logic
         if (
             new_size is not None and
             self.request.token.complete_list_size is not None and
@@ -84,9 +85,10 @@ class ListIdentifiersResponse(OAIResponse):
             raise OAIErrorNoRecordsMatch("No identifiers were found matching given parameters.")
 
         xmlb = etree.Element("ListIdentifiers")
+        recheads = self.repository.data.get_records_header(identifiers)
         # populate response body with record headers
-        for identifier in identifiers:
-            header(self.repository, identifier, xmlb)
+        for rechead in recheads:
+            add_header(self.repository, rechead, xmlb)
 
         # append a resumptionToken if needed
         if new_size > self.repository.data.limit:

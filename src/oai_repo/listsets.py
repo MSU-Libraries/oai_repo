@@ -6,34 +6,6 @@ from .request import OAIRequest
 from .response import OAIResponse
 from .exceptions import OAIErrorNoSetHierarchy
 
-class SetValidator:
-    """Validator for the Set class"""
-    def errors(self):
-        """
-        Verify fields are valid and present where required. Returning a list of descriptive
-        errors if any issues were found.
-        """
-        failures = []
-        failures.extend(self._spec_failures())
-        failures.extend(self._name_failures())
-        failures.extend(self._description_failures())
-        return failures
-
-    def _spec_failures(self):
-        """Return a list of spec failures"""
-        # TODO
-        return []
-
-    def _name_failures(self):
-        """Return a list of name failures"""
-        # TODO
-        return []
-
-    def _description_failures(self):
-        """Return a list of description failures"""
-        # TODO
-        return []
-
 
 class ListSetsRequest(OAIRequest):
     """

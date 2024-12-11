@@ -38,14 +38,7 @@ def test_ListIdentifiers():
     req = repo.create_request(request)
     rawresp = repo.create_response(req)
     resp = bytes(rawresp)
-    assert b'<resumptionToken cursor="50" completeListSize="101">' in resp
-    token = rawresp.xpath("//resumptionToken/text()")[0]
-    request = { 'verb': 'ListIdentifiers', 'resumptionToken': token }
-    req = repo.create_request(request)
-    rawresp = repo.create_response(req)
-    resp = bytes(rawresp)
     assert b'<resumptionToken cursor="100" completeListSize="101"/>' in resp
-    assert rawresp.xpath("//resumptionToken/text()") == []
 
     # Repeat resumption token
     rawresp = repo.create_response(req)

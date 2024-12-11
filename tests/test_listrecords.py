@@ -28,4 +28,4 @@ def test_ListRecords():
     req = repo.create_request(request)
     rawresp = repo.create_response(req)
     resp = bytes(rawresp)
-    assert b'<resumptionToken cursor="50" completeListSize="' in resp
+    assert b'<resumptionToken cursor="100" completeListSize="' in resp

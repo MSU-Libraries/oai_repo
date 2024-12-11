@@ -4,7 +4,7 @@ Implementation of ListRecords verb
 from lxml import etree
 from .request import OAIRequest
 from .response import OAIResponse
-from .getrecord import record
+from .getrecord import add_records
 from .resumption import ResumptionToken
 from .exceptions import (
     OAIErrorNoRecordsMatch, OAIErrorBadResumptionToken,
@@ -72,6 +72,7 @@ class ListRecordsResponse(OAIResponse):
             cursor
         )
 
+        # TODO allow custom token invalidation logic
         if (
             new_size is not None and
             self.request.token.complete_list_size is not None and
@@ -83,9 +84,8 @@ class ListRecordsResponse(OAIResponse):
             raise OAIErrorNoRecordsMatch("No identifiers were found matching given parameters.")
 
         xmlb = etree.Element("ListRecords")
-        # populate response body with record headers
-        for identifier in identifiers:
-            record(self.repository, identifier, self.request.metadata_prefix, xmlb)
+
+        add_records(self.repository, identifiers, self.request.metadata_prefix, xmlb)
 
         # append a resumptionToken if needed
         if new_size > self.repository.data.limit:

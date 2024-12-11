@@ -7,41 +7,7 @@ from .request import OAIRequest
 from .response import OAIResponse
 from .exceptions import OAIErrorIdDoesNotExist, OAIErrorCannotDisseminateFormat
 from .helpers import granularity_format
-
-
-class RecordHeaderValidator:
-    """Validator for the RecordHeader class"""
-    def errors(self):
-        """
-        Verify fields are valid and present where required. Returning a list of descriptive
-        errors if any issues were found.
-        """
-        failures = []
-        failures.extend(self._identifier_failures())
-        failures.extend(self._datestamp_failures())
-        failures.extend(self._setspecs_failures())
-        failures.extend(self._status_failures())
-        return failures
-
-    def _metadata_identifier_failures(self):
-        """Return a list of identifier failures"""
-        # TODO
-        return []
-
-    def _datestamp_failures(self):
-        """Return a list of datestamp failures"""
-        # TODO
-        return []
-
-    def _setspecs_failures(self):
-        """Return a list of setspecs failures"""
-        # TODO
-        return []
-
-    def _status_failures(self):
-        """Return a list of setspecs failures"""
-        return ["RecordHeader.status can only be None or 'deleted'"] \
-            if self.status and self.status != "deleted" else []
+from .interfacedata import RecordHeader
 
 
 class GetRecordRequest(OAIRequest):
@@ -90,53 +56,67 @@ class GetRecordResponse(OAIResponse):
                 "The requested metadataPrefix does not exist for the given identifier."
             )
 
-        granularity = self.repository.data.get_identify().granularity
         xmlb = etree.Element("GetRecord")
-        record(self.repository, identifier, metadataprefix, xmlb)
+        add_records(self.repository, [identifier], metadataprefix, xmlb)
         return xmlb
 
-def header(repository: "OAIRepository", identifier: str, xmlb: etree._Element):
+def add_header(repository: "OAIRepository", header: RecordHeader, xmlb: etree._Element):
     """
-    Generate and append a <header> OAI element to and XML doc.
+    Append a OAI <header> element for a given RecordHeader to an XML element.
 
     Args:
         repository (OAIRepository): An instantiated repository class
-        identifier (str): A valid identifier string
+        header (RecordHeader): A RecordHeader instance
         xmlb (lxml.etree._Element): The element to add the header to
     """
-    head = repository.data.get_record_header(identifier)
     xhead = etree.SubElement(xmlb, "header")
     xident = etree.SubElement(xhead, "identifier")
-    xident.text = head.identifier
+    xident.text = header.identifier
     xstamp = etree.SubElement(xhead, "datestamp")
     xstamp.text = granularity_format(
         repository.data.get_identify().granularity,
-        head.datestamp
-    ) if isinstance(head.datestamp, datetime) else head.datestamp
-    for setspec in head.setspecs:
+        header.datestamp
+    ) if isinstance(header.datestamp, datetime) else header.datestamp
+    for setspec in header.setspecs:
         xset = etree.SubElement(xhead, "setSpec")
         xset.text = setspec
 
-def record(repository: "OAIRepository", identifier: str, metadataprefix: str, xmlb: etree._Element):
+def add_records(
+    repository: "OAIRepository",
+    identifiers: list[str],
+    metadataprefix: str,
+    xmlb: etree._Element
+):
     """
-    Generate and append a <record> OAI element to and XML doc.
+    Generate and append <record> OAI elements to an XML doc. If the requested
+    metadata prefix is not valid for the identifier, then nothing is added for
+    that identifer.
 
     Args:
         repository (OAIRepository): An instantiated repository class
-        identifier (str): A valid identifier string
-        xmlb (lxml.etree._Element): The element to add the header to
-    """
-    if not (recmeta := repository.data.get_record_metadata(identifier, metadataprefix)):
-        return
+        identifiers (list[str]): A list of valid identifier strings
+        xmlb (lxml.etree._Element): The element to add the records to
 
-    xrec = etree.SubElement(xmlb, "record")
-    # Header
-    header(repository, identifier, xrec)
-    # Metadata
-    xmeta = etree.SubElement(xrec, "metadata")
-    xmeta.append(recmeta)
-    # About
-    abouts = repository.data.get_record_abouts(identifier)
-    for about in abouts:
-        xabout = etree.SubElement(xrec, "about")
-        xabout.append(about)
+    Returns:
+        int The count of records added to the XML
+    """
+    count = 0
+    recmetas = repository.data.get_records_metadata(identifiers, metadataprefix)
+    recheads = repository.data.get_records_header(identifiers)
+    recabouts = repository.data.get_records_abouts(identifiers)
+
+    for recmeta, rechead, recabout in zip(recmetas, recheads, recabouts):
+        if recmeta is None:
+            continue
+        xrec = etree.SubElement(xmlb, "record")
+        # Header
+        add_header(repository, rechead, xrec)
+        # Metadata
+        xmeta = etree.SubElement(xrec, "metadata")
+        xmeta.append(recmeta)
+        # About
+        for about in recabout:
+            xabout = etree.SubElement(xrec, "about")
+            xabout.append(about)
+        count += 1
+    return count

@@ -1,8 +1,6 @@
 """
 Implementation of ListMetadataFormats verb
 """
-import re
-import validators
 from lxml import etree
 from .request import OAIRequest
 from .response import OAIResponse
@@ -11,36 +9,6 @@ from .exceptions import (
     OAIErrorNoMetadataFormats,
     OAIRepoInternalException
 )
-
-
-class MetadataFormatValidator:
-    """Validator for the MetadataFormat class"""
-    def errors(self):
-        """
-        Verify fields are valid and present where required. Returning a list of descriptive
-        errors if any issues were found.
-        """
-        failures = []
-        failures.extend(self._metadata_prefix_failures())
-        failures.extend(self._schema_failures())
-        failures.extend(self._metadata_namespace_failures())
-        return failures
-
-    def _metadata_prefix_failures(self):
-        """Return a list of metadata_prefix failures"""
-        pattern = re.compile(r"^[A-Za-z0-9-_.!~*'\(\)]+$")
-        return [] if pattern.search(self.metadata_prefix) is not None else \
-            ["metadata_prefix contains invalid character(s); allowed chars: A-Za-z0-9-_.!~*'()"]
-
-    def _schema_failures(self):
-        """Return a list of schema failures"""
-        return ["schema must be a valid URL"] \
-            if not validators.url(self.schema, simple_host=True) else []
-
-    def _metadata_namespace_failures(self):
-        """Return a list of metadata_namespace failures"""
-        return ["metadata_namespace must be a valid URL"] \
-            if not validators.url(self.metadata_namespace, simple_host=True) else []
 
 
 class ListMetadataFormatsRequest(OAIRequest):
