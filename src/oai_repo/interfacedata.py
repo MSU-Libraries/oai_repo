@@ -75,7 +75,7 @@ class MetadataFormat(MetadataFormatValidator):
 class RecordHeader(RecordHeaderValidator):
     """
     Class to define a record header for an identifier. Your definition of the
-    `DataInterface.get_record_header()` method should one of these.
+    `DataInterface.get_record_header()` method should return one of these.
 
     Attributes:
         identifier (str): The OAI identifier

@@ -64,15 +64,20 @@ class DataInterface:
 
         Returns:
             The RecordHeader object with all properties set appropriately.
+
+        Note:
+            If you implement `get_records_header`, you may not need this
+            method implemented. By default, `get_records_header` is the
+            only method which calls `get_record_header`.
         """
         raise NotImplementedError
 
-    def get_records_header(self, identifiers: str) -> list[RecordHeader]:
+    def get_records_header(self, identifiers: list[str]) -> list[RecordHeader]:
         """
         Return a list of RecordHeader instances for the identifiers.
 
         Args:
-            identifier (list[str]): A list of valid identifier strings
+            identifier (list): A list of valid identifier strings
 
         Returns:
             A list of the RecordHeader objects with all properties set appropriately.
@@ -99,6 +104,11 @@ class DataInterface:
 
         Important:
             oai_repo will wrap the response with a `<metadata>` tag; do not add it yourself.
+
+        Note:
+            If you implement `get_records_metadata`, you may not need this
+            method implemented. By default, `get_records_metadata` is the
+            only method which calls `get_record_metadata`.
         """
         raise NotImplementedError
 
@@ -123,7 +133,7 @@ class DataInterface:
         """
         return [self.get_record_metadata(identifier, metadataprefix) for identifier in identifiers]
 
-    def get_record_abouts(self, identifiers: str) -> list[lxml.etree._Element]:
+    def get_record_abouts(self, identifier: str) -> list[lxml.etree._Element]:
         """
         Return a list of XML elements which will populate the `<about>` tags in GetRecord responses.
 
@@ -135,6 +145,11 @@ class DataInterface:
 
         Important:
             oai_repo will wrap the response with a `<about>` tag; do not add it yourself.
+
+        Note:
+            If you implement `get_records_abouts`, you may not need this
+            method implemented. By default, `get_records_abouts` is the
+            only method which calls `get_record_abouts`.
         """
         raise NotImplementedError
 
