@@ -52,7 +52,7 @@ This `DataInterface` provides you a template of the functionality which you must
 code yourself.
 
 For example, in order for the OAI `Identify` verb to function, you must
-implement the `DataInterface` `get_identity()` method.
+implement the `DataInterface` `get_identify()` method.
 ```python
 from oai_repo import DataInterface, Identify
 
