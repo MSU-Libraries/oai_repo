@@ -54,11 +54,11 @@ code yourself.
 For example, in order for the OAI `Identify` verb to function, you must
 implement the `DataInterface` `get_identity()` method.
 ```python
-from oai_repo import DataInterface, Identity
+from oai_repo import DataInterface, Identify
 
 class MyOAIData(DataInterface):
     def get_identify(self) -> Identify:
-        ident = Identity()
+        ident = Identify()
         ident.repository_name = "My OAI Repository"
         ident.base_url = f"https://example.edu/oai"
         ident.granularity = "YYYY-MM-DDThh:mm:ssZ"
