@@ -46,9 +46,9 @@ Resulting in a complete OAI response:
 ```
 
 The missing piece above is the `MyOAIData` class, although you can name this
-class whatever you'd like. When you create the `oai_repo.OAIRepository` class,
-you need to pass it an implemented `oai_repo.DataInterface` class. This
-`DataInterface` provides you a template of the functionality which you must
+class whatever you'd like. When you create the `oai_repo.OAIRepository` instance,
+you need to pass it an instance of an implemented `oai_repo.DataInterface` class.
+This `DataInterface` provides you a template of the functionality which you must
 code yourself.
 
 For example, in order for the OAI `Identify` verb to function, you must
