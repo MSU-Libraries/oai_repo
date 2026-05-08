@@ -1,13 +1,15 @@
 import pytest
 import oai_repo
+from lxml import etree
 from oai_repo.exceptions import (
     OAIErrorIdDoesNotExist,
     OAIErrorBadArgument,
     OAIErrorCannotDisseminateFormat,
     OAIRepoExternalException,
 )
-from .data_sets import DataWithSets
+from .data_sets import DataWithSets, DataWithMissingHeaders
 
+@pytest.mark.remote
 def test_GetRecord():
     repo = oai_repo.OAIRepository(DataWithSets())
 
@@ -76,3 +78,16 @@ def test_GetRecord():
 
     # Config where API url returns invalid data
     #TODO
+
+@pytest.mark.remote
+def test_GetRecord_add_header():
+    repo = oai_repo.OAIRepository(DataWithMissingHeaders())
+
+    request = {
+        'verb': 'GetRecord',
+        'identifier': 'wkar-aimh_1',
+        'metadataPrefix': 'oai_dc'
+    }
+    req = repo.create_request(request)
+    with pytest.raises(OAIRepoExternalException, match="Record Header is None for wkar-aimh_1"):
+        resp = repo.create_response(req)

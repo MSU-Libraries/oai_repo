@@ -5,7 +5,11 @@ from datetime import datetime
 from lxml import etree
 from .request import OAIRequest
 from .response import OAIResponse
-from .exceptions import OAIErrorIdDoesNotExist, OAIErrorCannotDisseminateFormat
+from .exceptions import (
+    OAIErrorIdDoesNotExist,
+    OAIErrorCannotDisseminateFormat,
+    OAIRepoExternalException
+)
 from .helpers import granularity_format
 from .interfacedata import RecordHeader
 
@@ -34,11 +38,12 @@ class GetRecordRequest(OAIRequest):
 
 class GetRecordResponse(OAIResponse):
     """
-    Generate a resposne for the GetRecord verb
+    Generate a response for the GetRecord verb
 
     Raises:
         OAIErrorIdDoesNotExist
         OAIErrorCannotDisseminateFormat
+        OAIRepoExternalException
     """
     def __repr__(self):
         return f"GetRecordResponse(identifier={self.request.identifier},"\
@@ -105,9 +110,11 @@ def add_records(
     recheads = repository.data.get_records_header(identifiers)
     recabouts = repository.data.get_records_abouts(identifiers)
 
-    for recmeta, rechead, recabout in zip(recmetas, recheads, recabouts):
+    for idx, (recmeta, rechead, recabout) in enumerate(zip(recmetas, recheads, recabouts)):
         if recmeta is None:
             continue
+        if rechead is None:
+            raise OAIRepoExternalException(f"Record Header is None for {identifiers[idx]}")
         xrec = etree.SubElement(xmlb, "record")
         # Header
         add_header(repository, rechead, xrec)

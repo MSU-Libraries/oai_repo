@@ -1,0 +1,99 @@
+#!/bin/bash
+
+# Find directory where this script resides
+CUR_DIR=$( dirname "$0" )
+CUR_DIR=$( readlink -f "$CUR_DIR" )
+
+# Script help text
+runhelp() {
+    echo ""
+    echo "Usage: Run PyTests"
+    echo ""
+    echo "Will run tests from: $CUR_DIR"
+    echo ""
+    echo "FLAGS:"
+    echo "  -x|--exitfirst"
+    echo "      Exit/stop tests on first failure"
+    echo "  -l|--local"
+    echo "      Run local tests only"
+    echo "  -r|--remote"
+    echo "      Run remote tests which connect to dev nodes"
+    echo "  -a|--all"
+    echo "      Run all unit tests"
+    echo "  -p|--parallel"
+    echo "      Run tests in parallel"
+    echo "  -k PATTERN"
+    echo "      Run tests matching PATTERN"
+    echo "  -v|--verbose"
+    echo "      Show verbose output"
+    echo ""
+}
+
+if [[ -z "$1" || $1 == "-h" || $1 == "--help" || $1 == "help" ]]; then
+    runhelp
+    exit 0
+fi
+
+declare -a ADDED_ARGS
+ADDED_ARGS+=('--cov')
+
+# Parse flag arguments
+while [[ $# -gt 0 ]]; do
+    case $1 in
+    -x|--exitfirst)
+        ADDED_ARGS+=("-x")
+        shift ;;
+    -r|--remote)
+        TEST_TYPE=remote
+        shift ;;
+    -l|--local)
+        TEST_TYPE=local
+        shift;;
+    -a|--all)
+        TEST_TYPE=all
+        shift ;;
+    -p|--parallel)
+        ADDED_ARGS+=("-n" "3")
+        shift ;;
+    -k)
+        ADDED_ARGS+=("-k" "$2")
+        shift 2 ;;
+    -v|--verbose)
+        ADDED_ARGS+=("-vvv" "--tb=short")
+        shift ;;
+    *)
+        echo "ERROR: Unknown flag: $1"
+        exit 1
+    esac
+done
+
+# Go to the script directory
+echo "Testing from: $CUR_DIR"
+pushd $CUR_DIR > /dev/null
+
+[[ -r env/bin/activate ]] && source env/bin/activate
+
+if [[ -z $TEST_TYPE ]]; then
+    TEST_TYPE=all
+fi
+
+if [[ $TEST_TYPE == "local" ]]; then
+    echo "Running: pytest ${ADDED_ARGS[*]}"
+    pytest "${ADDED_ARGS[@]}" -m 'local'
+    PYTEST_EXIT_CODE=$?
+elif [[ $TEST_TYPE == "remote" ]]; then
+    pytest "${ADDED_ARGS[@]}" -m 'remote'
+    PYTEST_EXIT_CODE=$?
+elif [[ $TEST_TYPE == "all" ]]; then
+    pytest "${ADDED_ARGS[@]}" -m  ''
+    PYTEST_EXIT_CODE=$?
+else
+    echo "ERROR: Unknown test type of '$TEST_TYPE'; see 'run-pytest --help'"
+    exit 1
+fi
+
+
+# Return
+popd > /dev/null
+
+exit $PYTEST_EXIT_CODE

@@ -313,3 +313,8 @@ class DataWithSets(oai_repo.DataInterface):
         pids = oai_repo.helpers.jsonpath_find(identifier_resp, '$.docs[*].PID')
         identifiers = [self.identifier(pid) for pid in pids]
         return identifiers, size, None
+
+class DataWithMissingHeaders(DataWithSets):
+
+    def get_records_header(self, identifiers: list[str]):
+        return [None for _ in identifiers]
