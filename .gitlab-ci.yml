@@ -1,6 +1,6 @@
 stages:
   - Testing and Linting
-#  - Build
+  - Build
   - Release
 
 Unit Testing and Linting:
@@ -19,21 +19,21 @@ Unit Testing and Linting:
     reports:
       junit: report.xml
 
-#Build Docs for GitLab:
-#  stage: Build
-#  tags:
-#    - msul-shared
-#  image: python:3.10
-#  only:
-#    - master
-#  except:
-#    - tags
-#  script:
-#    - pip install -r requirements.txt
-#    - mkdocs build --site-dir public
-#  artifacts:
-#    paths:
-#      - public
+Build Docs for GitLab:
+  stage: Build
+  tags:
+    - msul-shared
+  image: python:3.10
+  only:
+    - master
+  except:
+    - tags
+  script:
+    - pip install -r requirements.txt
+    - mkdocs build --site-dir public
+  artifacts:
+    paths:
+      - public
 
 GitHub Release:
   stage: Release
