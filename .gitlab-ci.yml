@@ -1,6 +1,6 @@
 stages:
   - Testing and Linting
-  - Build
+#  - Build
   - Release
 
 Unit Testing and Linting:
